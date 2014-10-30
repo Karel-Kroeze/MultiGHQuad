@@ -10,6 +10,6 @@ Description: Uses a transformed and rotated n-dimensional grid of quadrature
     distributed parameters.
 License: MIT
 Depends:
-    R (>= 3.1.1)
+    R (>= 3.0.0)
 Imports:
     fastGHQuad (>= 0.2)
