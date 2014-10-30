@@ -8,20 +8,13 @@ MGHQuadEval(FUN = function(x) 1, Q = 2, mu = rep(0, Q), Sigma = diag(Q),
   X = NULL, W = NULL, ...)
 }
 \arguments{
-\item{FUN}{Likelihood function of the parameters to be evaluated. Defaults to
-\code{function(x) 1} for multivariate normal pdf.}
-
-\item{Q}{Number of dimensions. Defaults to 2. Only required when \code{mu}
-and \code{Sigma} are not provided.}
+\item{Q}{Number of dimensions. Defaults to 2. Only required when \code{mu} and \code{Sigma} are not provided.}
 
 \item{mu}{Mean vector, defaults to rep(0,Q), the zero vector of length Q.}
 
-\item{Sigma}{Covariance matrix, defaults to diag(Q), the identity matrix of
-rank Q.}
+\item{Sigma}{Covariance matrix, defaults to diag(Q), the identity matrix of rank Q.}
 
-\item{X}{Matrix of quadrature points, see \code{\link{MGHQuadPoints}}.
-Alternatively, the list of quadrature points and weights produced by
-\code{\link{MGHQuadPoints}}.}
+\item{X}{Matrix of quadrature points, see \code{\link{MGHQuadPoints}}. Alternatively, the list of quadrature points and weights produced by \code{\link{MGHQuadPoints}}.}
 
 \item{W}{Vector of weights, or \code{NULL} if provided by \code{X}.}
 
@@ -31,19 +24,15 @@ Alternatively, the list of quadrature points and weights produced by
 A vector with the evaluated integrals.
 }
 \description{
-Evaluates a given function with a (built-in) multivariate normal distribution
-with Gauss-Hermite quadrature.
+Evaluates a given function with a (built-in) multivariate normal distribution with Gauss-Hermite quadrature.
 }
 \details{
-The evaluated function is assumed to have a multivariate normal distribution,
-with a given mean vector and covariance matrix. The default identity function
-\code{function(x) 1} reduces to an integral over a multivariate normal
-distribution with mean vector \code{mu} and covariance matrix \code{Sigma}.
+The evaluated function is assumed to have a multivariate normal distribution, with a given mean vector and covariance matrix.
+The default identity function \code{function(x) 1} reduces to an integral over a multivariate normal distribution with mean vector \code{mu} and covariance matrix \code{Sigma}.
 }
 \examples{
 quadPoints <- MGHQuadPoints(Q=3)
-# expected value of 3-dimensional multivariate normal distribution: N(0,1).
-# (Since mean is currently fixed at zero, this is always zero.)
+# expected value of 3-dimensional multivariate normal distribution: N(0,1). (Since mean is currently fixed at zero, this is always zero.)
 integral <- MGHQuadEval(Q=3,X=quadPoints)
 integral
 round(integral)
