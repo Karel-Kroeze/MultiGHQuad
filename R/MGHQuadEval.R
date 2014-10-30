@@ -5,6 +5,8 @@
 #' The evaluated function is assumed to have a multivariate normal distribution, with a given mean vector and covariance matrix. 
 #' The default identity function \code{function(x) 1} reduces to an integral over a multivariate normal distribution with mean vector \code{mu} and covariance matrix \code{Sigma}.
 #' 
+#' @param FUN (Likelihood) function of the parameters to be estimated. 
+#'     Defaults to \code{funtion(x) 1}, in which case only the built-in multivariate normal pdf is evaluated.
 #' @param Q Number of dimensions. Defaults to 2. Only required when \code{mu} and \code{Sigma} are not provided.
 #' @param mu Mean vector, defaults to rep(0,Q), the zero vector of length Q.
 #' @param Sigma Covariance matrix, defaults to diag(Q), the identity matrix of rank Q.
@@ -16,7 +18,8 @@
 #' @export
 #' @examples
 #' quadPoints <- MGHQuadPoints(Q=3)
-#' # expected value of 3-dimensional multivariate normal distribution: N(0,1). (Since mean is currently fixed at zero, this is always zero.)
+#' # expected value of 3-dimensional multivariate normal distribution: N(0,1). 
+#' # (Since mean is currently fixed at zero, this is always zero.)
 #' integral <- MGHQuadEval(Q=3,X=quadPoints) 
 #' integral
 #' round(integral)

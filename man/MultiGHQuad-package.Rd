@@ -1,7 +1,6 @@
 \name{MultiGHQuad-package}
 \alias{MultiGHQuad-package}
 \alias{MultiGHQuad}
-\alias{MGHQuad}
 \docType{package}
 \title{
 Multidimensional Gauss-Hermite quadrature
@@ -33,7 +32,8 @@ Jaeckel, P. (2005). \emph{A note on multivariate Gauss-Hermite quadrature}. Lond
 \code{\link[fastGHQuad:fastGHQuad-package]{fastGHQuad}}
 }
 \examples{
-# Leaving FUN blank, expected value on each dimension of a Q-dimensional multivariate normal distribution. 
+# Leaving FUN blank, expected value on each dimension 
+# of a Q-dimensional multivariate normal distribution. 
 quadPoints <- MGHQuadPoints(Q=3)
 MGHQuadEval(X = quadPoints)
 }

@@ -32,6 +32,7 @@ And left multiply the quadrature points \code{z} by \code{A} to obtain correlate
 }
 \examples{
 # generate some noise with a given covariance matrix
+\dontrun{
 require(mvtnorm)
 sigma <- matrix(c(1,.8,.8,1),ncol=2,byrow=T)
 noise <- rmvnorm(1e4,mean=c(0,0),sigma=sigma)
@@ -48,7 +49,8 @@ points(quadPoints$X,pch=16)
 plot(noise,col='red',pch='.')
 points(quadPoints$X,col=grey(1-quadPoints$W/max(quadPoints$W)),pch=16)
 }
+}
 \seealso{
-\code{\link{fastGHQuad::gaussHermiteData}}, used to create unidimensional quadrature points, and \code{\link{MGHQuadEval}} for evaluating the integral.
+\code{\link[fastGHQuad]{gaussHermiteData}}, used to create unidimensional quadrature points, and \code{\link{MGHQuadEval}} for evaluating the integral.
 }
 

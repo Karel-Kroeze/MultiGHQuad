@@ -15,10 +15,11 @@
 #' @param Sigma Covariance matrix, defaults to diag(Q), the identity matrix of rank Q.
 #' @param ip Number of quadrature points \emph{per dimension}. Defaults to 6. Note that the total number of quadrature points is \code{ip^Q}.
 #' @return A list with a matrix \code{X} of \code{ip^Q} by \code{Q} quadrature points and a vector \code{W} of length \code{ip^Q} associated weights.
-#' @seealso \code{\link{fastGHQuad::gaussHermiteData}}, used to create unidimensional quadrature points, and \code{\link{MGHQuadEval}} for evaluating the integral.
+#' @seealso \code{\link[fastGHQuad]{gaussHermiteData}}, used to create unidimensional quadrature points, and \code{\link{MGHQuadEval}} for evaluating the integral.
 #' @export
 #' @examples
 #' # generate some noise with a given covariance matrix
+#' \dontrun{
 #' require(mvtnorm)
 #' sigma <- matrix(c(1,.8,.8,1),ncol=2,byrow=T)
 #' noise <- rmvnorm(1e4,mean=c(0,0),sigma=sigma)
@@ -34,6 +35,7 @@
 #' # plot quad points with weights
 #' plot(noise,col='red',pch='.')
 #' points(quadPoints$X,col=grey(1-quadPoints$W/max(quadPoints$W)),pch=16)
+#' }
 
 MGHQuadPoints <- function(Q=2,mu=rep(0,Q),Sigma=diag(Q),ip=6){
   # get quadrature points, create grid
