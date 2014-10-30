@@ -8,7 +8,7 @@ Maintainer: Karel Kroeze <karel.kroeze@gmail.com>
 Description: Uses a transformed and rotated n-dimensional grid of quadrature
     points to calculate the numerical integral of n multivariate normally
     distributed parameters.
-License: MIT
+License: GPL-3
 Depends:
     R (>= 3.0.0)
 Imports:

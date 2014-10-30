@@ -21,7 +21,7 @@ MGHQuadEval(FUN = function(x) 1, Q = 2, mu = rep(0, Q), Sigma = diag(Q),
 \item{...}{Additional arguments passed on to FUN.}
 }
 \value{
-A matrix of dimensions \code{ip^Q} by \code{Q+1}. The first Q columns are the evaluation points, the final dimension is the associated weight.
+A vector with the evaluated integrals.
 }
 \description{
 Evaluates a given function with a (built-in) multivariate normal distribution with Gauss-Hermite quadrature.
@@ -38,6 +38,6 @@ integral
 round(integral)
 }
 \seealso{
-\code{\link{fastGHQuad::gaussHermiteData}}, used to create unidimensional quadrature points, and \code{\link{MGHQuadEval}} for evaluating the integral.
+\code{\link{MGHQuadPoints}} for creating quadrature points.
 }
 

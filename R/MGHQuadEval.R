@@ -11,8 +11,8 @@
 #' @param X Matrix of quadrature points, see \code{\link{MGHQuadPoints}}. Alternatively, the list of quadrature points and weights produced by \code{\link{MGHQuadPoints}}.
 #' @param W Vector of weights, or \code{NULL} if provided by \code{X}.
 #' @param ... Additional arguments passed on to FUN.
-#' @return A matrix of dimensions \code{ip^Q} by \code{Q+1}. The first Q columns are the evaluation points, the final dimension is the associated weight.
-#' @seealso \code{\link{fastGHQuad::gaussHermiteData}}, used to create unidimensional quadrature points, and \code{\link{MGHQuadEval}} for evaluating the integral.
+#' @return A vector with the evaluated integrals.
+#' @seealso \code{\link{MGHQuadPoints}} for creating quadrature points.
 #' @export
 #' @examples
 #' quadPoints <- MGHQuadPoints(Q=3)

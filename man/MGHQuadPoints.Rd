@@ -31,7 +31,7 @@ And left multiply the quadrature points \code{z} by \code{A} to obtain correlate
 \deqn{r = A \times z}{r = A \%*\% z}
 }
 \examples{
-# generate some noise with a given cov matrix
+# generate some noise with a given covariance matrix
 require(mvtnorm)
 sigma <- matrix(c(1,.8,.8,1),ncol=2,byrow=T)
 noise <- rmvnorm(1e4,mean=c(0,0),sigma=sigma)

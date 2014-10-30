@@ -1,40 +1,39 @@
-\name{MCAT-package}
-\alias{MCAT-package}
-\alias{MCAT}
+\name{MultiGHQuad-package}
+\alias{MultiGHQuad-package}
+\alias{MultiGHQuad}
+\alias{MGHQuad}
 \docType{package}
 \title{
-What the package does (short line)
-~~ package title ~~
+Multidimensional Gauss-Hermite quadrature
 }
 \description{
-More about what it does (maybe more than one line)
-~~ A concise (1-5 lines) description of the package ~~
+Chained numerical integration of multivariate normal distributed parameters.
 }
 \details{
 \tabular{ll}{
-Package: \tab MCAT\cr
+Package: \tab MultiGHQuad\cr
 Type: \tab Package\cr
-Version: \tab 1.0\cr
+Version: \tab 0.1\cr
 Date: \tab 2014-10-27\cr
-License: \tab What license is it under?\cr
+License: \tab GPL-3\cr
 }
-~~ An overview of how to use the package, including the most important functions ~~
+\code{\link{MGHQuadPoints}} to generate quadrature points, \code{\link{MGHQuadEval}} to evaluate the integral. 
 }
 \author{
-Who wrote it
+Karel Kroeze
 
-Maintainer: Who to complain to <yourfault@somewhere.net>
-~~ The author and/or maintainer of the package ~~
+Maintainer: Karel Kroeze <k.a.kroeze@student.utwente.nl>
 }
 \references{
-~~ Literature or other references for background information ~~
+Jaeckel, P. (2005). \emph{A note on multivariate Gauss-Hermite quadrature}. London: ABN-Amro. Retrieved from http://www.pjaeckel.webspace.virginmedia.com/ANoteOnMultivariateGaussHermiteQuadrature.pdf
 }
-~~ Optionally other standard keywords, one per line, from file KEYWORDS in the R documentation directory ~~
+
 \keyword{ package }
 \seealso{
-~~ Optional links to other man pages, e.g. ~~
-~~ \code{\link[<pkg>:<pkg>-package]{<pkg>}} ~~
+\code{\link[fastGHQuad:fastGHQuad-package]{fastGHQuad}}
 }
 \examples{
-~~ simple examples of the most important functions ~~
+# Leaving FUN blank, expected value on each dimension of a Q-dimensional multivariate normal distribution. 
+quadPoints <- MGHQuadPoints(Q=3)
+MGHQuadEval(X = quadPoints)
 }
