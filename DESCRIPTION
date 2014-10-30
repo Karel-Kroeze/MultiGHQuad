@@ -1,0 +1,15 @@
+Package: MultiGHQuad
+Type: Package
+Title: Multidimensional Gauss-Hermite quadrature
+Version: 0.1
+Date: 2014-10-30
+Author: Karel Kroeze
+Maintainer: Karel Kroeze <karel.kroeze@gmail.com>
+Description: Uses a transformed and rotated n-dimensional grid of quadrature
+    points to calculate the numerical integral of n multivariate normally
+    distributed parameters.
+License: MIT
+Depends:
+    R (>= 3.1.1)
+Imports:
+    fastGHQuad (>= 0.2)
