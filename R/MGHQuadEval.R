@@ -24,7 +24,7 @@
 #' integral
 #' round(integral)
 
-MGHQuadEval <- function(FUN = function(x) 1,Q=2,mu=rep(0,Q),Sigma=diag(Q),X=NULL,W=NULL,...){
+MGHQuadEval <- function(FUN = function(x) 1,Q=2,mu=rep(0,Q),Sigma=diag(Q),X=NULL,W=NULL,log=FALSE,...){
   if (is.list(X)){
     W <- X$W
     X <- X$X
@@ -32,21 +32,28 @@ MGHQuadEval <- function(FUN = function(x) 1,Q=2,mu=rep(0,Q),Sigma=diag(Q),X=NULL
   if (is.null(X) | is.null(W)) stop("Quadrature points and weights are required. See MGHQuadPoints.", call.=F)
 
   ipq <- length(W)
-  aux <- numeric(ipq)
+  f <- numeric(ipq)
   
   # main loop
   for (i in 1:ipq){
-    aux[i] <- FUN(X[i,],...) * W[i]
+    f[i] <- FUN(X[i,],...)
   }
   
+  # take logarithm
+  if(!log) f <- log(f)
+  
+  # apply weights
+  f <- f + log(W)
+  
+  # back to normal scale
+  f <- exp(f)
+  
   # normalizing constant
-  p1 <- sum(aux)
+  p1 <- sum(f)
   
   # multiply integrals with x values, sum over columns, divide by normalizing constant.
-  out <- (rep(1,ipq) %*% (aux * X)) / p1
+  out <- colSums(f * X)
   
   # return computed integral.
   return(out)
 }
-
-

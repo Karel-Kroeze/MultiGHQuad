@@ -38,25 +38,27 @@
 #' }
 
 MGHQuadPoints <- function(Q=2,mu=rep(0,Q),Sigma=diag(Q),ip=6){
-  # get quadrature points, create grid
+  # TODO: account for mu != 0.
+  # get quadrature points, apply normal pdf
   x <- fastGHQuad::gaussHermiteData(ip)
+  w <- x$w / sqrt(pi)
+  x <- x$x * sqrt(2)
+  
   # (if anyone knows an easy way to assign a single vector x times to x list elements, please tell me. )
-  X <- as.matrix(expand.grid(lapply(apply(replicate(Q,x$x),2,list),unlist)))
-
-  # calculate weights
-  # same as above, roundabout way to get the combn weights for each combination of quad points
-  g <- as.matrix(expand.grid(lapply(apply(replicate(Q,x$w),2,list),unlist)))
-  # combined weight is the product of the individual weights
-  W <- apply(g,1,prod)
+  X <- as.matrix(expand.grid(lapply(apply(replicate(Q,x),2,list),unlist)))
   
   # compute lambda (eigen decomposition covar matrix)
   lambda <- with(eigen(Sigma), vectors %*% diag(sqrt(values)))
   
   # apply mv normal pdf error function 
-  W. <- W * pi^(-Q/2)
   # account for correlation
-  X. <- t(lambda %*% t(X))
+  X <- t(lambda %*% t(X))
+
+  # calculate weights
+  # same as above, roundabout way to get the combn weights for each combination of quad points
+  g <- as.matrix(expand.grid(lapply(apply(replicate(Q,w),2,list),unlist)))
+  # combined weight is the product of the individual weights
+  W <- apply(g,1,prod)
   
-  # TODO: account for mu != 0.
-  return(invisible(list(X=X.,W=W.)))
+  return(invisible(list(X=X,W=W)))
 }
