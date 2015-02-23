@@ -7,11 +7,9 @@
 #' 
 #' @param FUN (Likelihood) function of the parameters to be estimated. 
 #'     Defaults to \code{funtion(x) 1}, in which case only the built-in multivariate normal pdf is evaluated.
-#' @param Q Number of dimensions. Defaults to 2. Only required when \code{mu} and \code{Sigma} are not provided.
-#' @param mu Mean vector, defaults to rep(0,Q), the zero vector of length Q.
-#' @param Sigma Covariance matrix, defaults to diag(Q), the identity matrix of rank Q.
 #' @param X Matrix of quadrature points, see \code{\link{MGHQuadPoints}}. Alternatively, the list of quadrature points and weights produced by \code{\link{MGHQuadPoints}}.
 #' @param W Vector of weights, or \code{NULL} if provided by \code{X}.
+#' @param log Should we take the logarithm of FUN values? Defaults to FALSE, assuming FUN returns a Log-likelihood.
 #' @param ... Additional arguments passed on to FUN.
 #' @return A vector with the evaluated integrals.
 #' @seealso \code{\link{MGHQuadPoints}} for creating quadrature points.
@@ -24,26 +22,31 @@
 #' integral
 #' round(integral)
 
-MGHQuadEval <- function(FUN = function(x) 1,Q=2,mu=rep(0,Q),Sigma=diag(Q),X=NULL,W=NULL,log=FALSE,...){
+eval.quad <- function(FUN = function(x) 1,Q=2,mu=rep(0,Q),Sigma=diag(Q),X=NULL,W=NULL,log=FALSE,...){
+  # allow list input
   if (is.list(X)){
     W <- X$W
     X <- X$X
   }
-  if (is.null(X) | is.null(W)) stop("Quadrature points and weights are required. See MGHQuadPoints.", call.=F)
-
+  
+  # require points + weights
+  if (is.null(X) | is.null(W)) stop("Quadrature points and weights are required. See init.gauss.", call.=F)
+  
+  # find or create function
+  FUN <- match.fun(FUN)
+  
+  # prepare working vars
   ipq <- length(W)
   f <- numeric(ipq)
   
   # main loop
   for (i in 1:ipq){
-    f[i] <- FUN(X[i,],...)
+    f[i] <- FUN(X[i,],...) + log(W[i])
   }
   
-  # take logarithm
-  if(!log) f <- log(f)
-  
-  # apply weights
-  f <- f + log(W)
+  # some numerical safeguards
+  m <- 700 - max(f)
+  f <- f + m
   
   # back to normal scale
   f <- exp(f)
@@ -52,8 +55,6 @@ MGHQuadEval <- function(FUN = function(x) 1,Q=2,mu=rep(0,Q),Sigma=diag(Q),X=NULL
   p1 <- sum(f)
   
   # multiply integrals with x values, sum over columns, divide by normalizing constant.
-  out <- colSums(f * X)
-  
-  # return computed integral.
+  out <- colSums(f * X) / p1
   return(out)
 }

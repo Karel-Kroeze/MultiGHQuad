@@ -37,7 +37,7 @@
 #' points(quadPoints$X,col=grey(1-quadPoints$W/max(quadPoints$W)),pch=16)
 #' }
 
-MGHQuadPoints <- function(Q=2,mu=rep(0,Q),Sigma=diag(Q),ip=6){
+init.quad <- function(Q=2,mu=rep(0,Q),Sigma=diag(Q),ip=6){
   # TODO: account for mu != 0.
   # get quadrature points, apply normal pdf
   x <- fastGHQuad::gaussHermiteData(ip)
