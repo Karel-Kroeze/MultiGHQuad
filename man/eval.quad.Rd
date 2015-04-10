@@ -4,8 +4,7 @@
 \alias{eval.quad}
 \title{Evaluation of multivariate normal distributed integral}
 \usage{
-eval.quad(FUN = function(x) 1, Q = 2, mu = rep(0, Q), Sigma = diag(Q),
-  X = NULL, W = NULL, log = FALSE, ...)
+eval.quad(FUN = function(x) 1, X = NULL, W = NULL, log = FALSE, ...)
 }
 \arguments{
 \item{FUN}{(Likelihood) function of the parameters to be estimated.
@@ -20,7 +19,7 @@ Defaults to \code{funtion(x) 1}, in which case only the built-in multivariate no
 \item{...}{Additional arguments passed on to FUN.}
 }
 \value{
-A vector with the evaluated integrals.
+A vector with the evaluated integrals, as well as a covariance matrix attribute.
 }
 \description{
 Evaluates a given function with a (built-in) multivariate normal distribution with Gauss-Hermite quadrature.

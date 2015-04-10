@@ -11,7 +11,7 @@
 #' @param W Vector of weights, or \code{NULL} if provided by \code{X}.
 #' @param log Should we take the logarithm of FUN values? Defaults to FALSE, assuming FUN returns a Log-likelihood.
 #' @param ... Additional arguments passed on to FUN.
-#' @return A vector with the evaluated integrals.
+#' @return A vector with the evaluated integrals, as well as a covariance matrix attribute.
 #' @seealso \code{\link{MGHQuadPoints}} for creating quadrature points.
 #' @export
 #' @examples
@@ -22,7 +22,7 @@
 #' integral
 #' round(integral)
 
-eval.quad <- function(FUN = function(x) 1,Q=2,mu=rep(0,Q),Sigma=diag(Q),X=NULL,W=NULL,log=FALSE,...){
+eval.quad <- function(FUN = function(x) 1,X=NULL,W=NULL,log=FALSE,...){
   # allow list input
   if (is.list(X)){
     W <- X$W
@@ -36,6 +36,7 @@ eval.quad <- function(FUN = function(x) 1,Q=2,mu=rep(0,Q),Sigma=diag(Q),X=NULL,W
   FUN <- match.fun(FUN)
   
   # prepare working vars
+  Q <- ncol(X)
   ipq <- length(W)
   f <- numeric(ipq)
   
@@ -55,6 +56,15 @@ eval.quad <- function(FUN = function(x) 1,Q=2,mu=rep(0,Q),Sigma=diag(Q),X=NULL,W
   p1 <- sum(f)
   
   # multiply integrals with x values, sum over columns, divide by normalizing constant.
-  out <- colSums(f * X) / p1
-  return(out)
+  estimate <- colSums(f * X) / p1
+  
+  # variance estimate (Bock & Mislevy, 1982)
+  variance <- matrix(0, Q, Q)
+  for (i in 1:ipq){
+    deviation <- X[i,] - estimate
+    variance <- variance + ( deviation %*% t(deviation) * f[i] / p1 )
+  }
+  
+  attr(estimate, "variance") <- variance
+  return(estimate)
 }
