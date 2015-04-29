@@ -4,19 +4,19 @@
 \alias{eval.quad}
 \title{Evaluation of multivariate normal distributed integral}
 \usage{
-eval.quad(FUN = function(x) 1, X = NULL, W = NULL, log = FALSE, ...)
+eval.quad(FUN = function(x) 1, X = NULL, W = NULL, debug = FALSE, ...)
 }
 \arguments{
-\item{FUN}{(Likelihood) function of the parameters to be estimated.
+\item{FUN}{LOG likelihood function of the parameters to be estimated.
 Defaults to \code{funtion(x) 1}, in which case only the built-in multivariate normal pdf is evaluated.}
 
 \item{X}{Matrix of quadrature points, see \code{\link{MGHQuadPoints}}. Alternatively, the list of quadrature points and weights produced by \code{\link{MGHQuadPoints}}.}
 
 \item{W}{Vector of weights, or \code{NULL} if provided by \code{X}.}
 
-\item{log}{Should we take the logarithm of FUN values? Defaults to FALSE, assuming FUN returns a Log-likelihood.}
-
 \item{...}{Additional arguments passed on to FUN.}
+
+\item{log}{Should we take the logarithm of FUN values? Defaults to FALSE, assuming FUN returns a Log-likelihood.}
 }
 \value{
 A vector with the evaluated integrals, as well as a covariance matrix attribute.

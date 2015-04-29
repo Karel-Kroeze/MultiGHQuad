@@ -37,7 +37,10 @@
 #' points(quadPoints$X,col=grey(1-quadPoints$W/max(quadPoints$W)),pch=16)
 #' }
 
-init.quad <- function(Q=2,mu=rep(0,Q),Sigma=diag(Q),ip=6){
+init.quad <- function(Q = 2,
+                      prior = list(mu = rep(0, Q), Sigma = diag(Q)),
+                      adapt = NULL,
+                      ip=6){
   # TODO: account for mu != 0.
   # get quadrature points, apply normal pdf
   x <- fastGHQuad::gaussHermiteData(ip)
@@ -48,17 +51,43 @@ init.quad <- function(Q=2,mu=rep(0,Q),Sigma=diag(Q),ip=6){
   X <- as.matrix(expand.grid(lapply(apply(replicate(Q,x),2,list),unlist)))
   
   # compute lambda (eigen decomposition covar matrix)
-  lambda <- with(eigen(Sigma), vectors %*% diag(sqrt(values)))
+  prior$lambda <- with(eigen(prior$Sigma), vectors %*% diag(sqrt(values)))
   
   # apply mv normal pdf error function 
   # account for correlation
-  X <- t(lambda %*% t(X))
-
+  X <- t(prior$lambda %*% t(X))
+  # plug in prior mean
+  # TODO: Check with Cees if it's really this simple
+  X <- t(t(X) + prior$mu)
+  
   # calculate weights
   # same as above, roundabout way to get the combn weights for each combination of quad points
   g <- as.matrix(expand.grid(lapply(apply(replicate(Q,w),2,list),unlist)))
   # combined weight is the product of the individual weights
-  W <- apply(g,1,prod)
+  W <- log(apply(g,1,prod))
+  
+  # adapt to best estimate
+  if (!is.null(adapt)){
+    # Adapt quadrature grid
+    adapt$lambda <- with(eigen(adapt$Sigma), vectors %*% diag(sqrt(values)))
+    X <- t(adapt$lambda %*% t(X))
+    X <- t(t(X) + adapt$mu)
+    
+    # calculate 'adaptive factor'
+    # Ripped from mvtnorm/dmvnorm, note that the -.5 * Q * log(2*pi) term in each ll cancels out, the remainder is aux.
+    adapt$chol <- chol(adapt$Sigma)
+    adapt$det <- sum(log(diag(adapt$chol)))
+    adapt$aux <- colSums(backsolve(adapt$chol, t(X) - adapt$mu, transpose = TRUE)^2)
+    
+    prior$chol <- chol(prior$Sigma)
+    prior$det <- sum(log(diag(prior$chol)))
+    prior$aux <- colSums(backsolve(prior$chol, t(X) - prior$mu, transpose = TRUE)^2)
+    
+    fact <- adapt$det - prior$det + (adapt$aux - prior$aux) / 2
+
+    # incorporate into weights.
+    W <- W + fact
+  }
   
   return(invisible(list(X=X,W=W)))
 }

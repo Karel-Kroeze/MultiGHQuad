@@ -5,7 +5,7 @@
 #' The evaluated function is assumed to have a multivariate normal distribution, with a given mean vector and covariance matrix. 
 #' The default identity function \code{function(x) 1} reduces to an integral over a multivariate normal distribution with mean vector \code{mu} and covariance matrix \code{Sigma}.
 #' 
-#' @param FUN (Likelihood) function of the parameters to be estimated. 
+#' @param FUN LOG likelihood function of the parameters to be estimated. 
 #'     Defaults to \code{funtion(x) 1}, in which case only the built-in multivariate normal pdf is evaluated.
 #' @param X Matrix of quadrature points, see \code{\link{MGHQuadPoints}}. Alternatively, the list of quadrature points and weights produced by \code{\link{MGHQuadPoints}}.
 #' @param W Vector of weights, or \code{NULL} if provided by \code{X}.
@@ -22,7 +22,7 @@
 #' integral
 #' round(integral)
 
-eval.quad <- function(FUN = function(x) 1,X=NULL,W=NULL,log=FALSE,...){
+eval.quad <- function(FUN = function(x) 1, X = NULL, W = NULL, debug = FALSE, ...){
   # allow list input
   if (is.list(X)){
     W <- X$W
@@ -42,7 +42,7 @@ eval.quad <- function(FUN = function(x) 1,X=NULL,W=NULL,log=FALSE,...){
   
   # main loop
   for (i in 1:ipq){
-    f[i] <- FUN(X[i,],...) + log(W[i])
+    f[i] <- FUN(X[i,],...) + W[i]
   }
   
   # some numerical safeguards
@@ -66,5 +66,15 @@ eval.quad <- function(FUN = function(x) 1,X=NULL,W=NULL,log=FALSE,...){
   }
   
   attr(estimate, "variance") <- variance
+  
+  # debug stuff
+  if (debug) {
+    x <- unique(X[,1])
+    y <- unique(X[,2])
+    attr(estimate, "x") <- x
+    attr(estimate, "y") <- y
+    attr(estimate, "values") <- matrix(f, length(x), length(y))
+  }
+  
   return(estimate)
 }

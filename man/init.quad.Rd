@@ -4,16 +4,17 @@
 \alias{init.quad}
 \title{Q-dimensional grid of quadrature points.}
 \usage{
-init.quad(Q = 2, mu = rep(0, Q), Sigma = diag(Q), ip = 6)
+init.quad(Q = 2, prior = list(mu = rep(0, Q), Sigma = diag(Q)),
+  adapt = NULL, ip = 6)
 }
 \arguments{
 \item{Q}{Number of dimensions. Defaults to 2. Only required when \code{mu} and \code{Sigma} are not provided.}
 
+\item{ip}{Number of quadrature points \emph{per dimension}. Defaults to 6. Note that the total number of quadrature points is \code{ip^Q}.}
+
 \item{mu}{Mean vector, defaults to rep(0,Q), the zero vector of length Q. CURRENTLY NOT IMPLEMENTED.}
 
 \item{Sigma}{Covariance matrix, defaults to diag(Q), the identity matrix of rank Q.}
-
-\item{ip}{Number of quadrature points \emph{per dimension}. Defaults to 6. Note that the total number of quadrature points is \code{ip^Q}.}
 }
 \value{
 A list with a matrix \code{X} of \code{ip^Q} by \code{Q} quadrature points and a vector \code{W} of length \code{ip^Q} associated weights.
