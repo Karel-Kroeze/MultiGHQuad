@@ -12,11 +12,11 @@ Chained numerical integration of multivariate normal distributed parameters.
 \tabular{ll}{
 Package: \tab MultiGHQuad\cr
 Type: \tab Package\cr
-Version: \tab 0.1\cr
+Version: \tab 0.2\cr
 Date: \tab 2014-10-27\cr
 License: \tab GPL-3\cr
 }
-\code{\link{MGHQuadPoints}} to generate quadrature points, \code{\link{MGHQuadEval}} to evaluate the integral. 
+\code{\link{init.quad}} to generate quadrature points, \code{\link{eval.quad}} to evaluate the integral. 
 }
 \author{
 Karel Kroeze
@@ -34,6 +34,6 @@ Jaeckel, P. (2005). \emph{A note on multivariate Gauss-Hermite quadrature}. Lond
 \examples{
 # Leaving FUN blank, expected value on each dimension 
 # of a Q-dimensional multivariate normal distribution. 
-quadPoints <- MGHQuadPoints(Q=3)
-MGHQuadEval(X = quadPoints)
+quadPoints <- init.quad(Q=3)
+eval.quad(X = quadPoints)
 }

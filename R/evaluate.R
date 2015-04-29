@@ -7,18 +7,18 @@
 #' 
 #' @param FUN LOG likelihood function of the parameters to be estimated. 
 #'     Defaults to \code{funtion(x) 1}, in which case only the built-in multivariate normal pdf is evaluated.
-#' @param X Matrix of quadrature points, see \code{\link{MGHQuadPoints}}. Alternatively, the list of quadrature points and weights produced by \code{\link{MGHQuadPoints}}.
+#' @param X Matrix of quadrature points, see \code{\link{init.quad}}. Alternatively, the list of quadrature points and weights produced by \code{\link{init.quad}}.
 #' @param W Vector of weights, or \code{NULL} if provided by \code{X}.
-#' @param log Should we take the logarithm of FUN values? Defaults to FALSE, assuming FUN returns a Log-likelihood.
+#' @param debug Logical, should we return evaluated FUN results?
 #' @param ... Additional arguments passed on to FUN.
 #' @return A vector with the evaluated integrals, as well as a covariance matrix attribute.
-#' @seealso \code{\link{MGHQuadPoints}} for creating quadrature points.
+#' @seealso \code{\link{init.quad}} for creating quadrature points.
 #' @export
 #' @examples
-#' quadPoints <- MGHQuadPoints(Q=3)
+#' quadPoints <- init.quad(Q=3)
 #' # expected value of 3-dimensional multivariate normal distribution: N(0,1). 
 #' # (Since mean is currently fixed at zero, this is always zero.)
-#' integral <- MGHQuadEval(Q=3,X=quadPoints) 
+#' integral <- eval.quad(X=quadPoints) 
 #' integral
 #' round(integral)
 
@@ -69,11 +69,7 @@ eval.quad <- function(FUN = function(x) 1, X = NULL, W = NULL, debug = FALSE, ..
   
   # debug stuff
   if (debug) {
-    x <- unique(X[,1])
-    y <- unique(X[,2])
-    attr(estimate, "x") <- x
-    attr(estimate, "y") <- y
-    attr(estimate, "values") <- matrix(f, length(x), length(y))
+    attr(estimate, "values") <- f
   }
   
   return(estimate)

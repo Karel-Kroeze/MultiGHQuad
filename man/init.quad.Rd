@@ -10,11 +10,11 @@ init.quad(Q = 2, prior = list(mu = rep(0, Q), Sigma = diag(Q)),
 \arguments{
 \item{Q}{Number of dimensions. Defaults to 2. Only required when \code{mu} and \code{Sigma} are not provided.}
 
+\item{prior}{List of prior mean \code{mu}, = \code{vector}, and covariance matrix \code{Sigma} = \code{matrix}, defaults to zero vector and identity matrix respectively.}
+
+\item{adapt}{List of adaptive mean \code{mu}, = \code{vector}, and covariance matrix \code{Sigma} = \code{matrix}, if \code{NULL} no adaptation is used. Defaults to NULL.}
+
 \item{ip}{Number of quadrature points \emph{per dimension}. Defaults to 6. Note that the total number of quadrature points is \code{ip^Q}.}
-
-\item{mu}{Mean vector, defaults to rep(0,Q), the zero vector of length Q. CURRENTLY NOT IMPLEMENTED.}
-
-\item{Sigma}{Covariance matrix, defaults to diag(Q), the identity matrix of rank Q.}
 }
 \value{
 A list with a matrix \code{X} of \code{ip^Q} by \code{Q} quadrature points and a vector \code{W} of length \code{ip^Q} associated weights.
@@ -41,17 +41,17 @@ noise <- rmvnorm(1e4,mean=c(0,0),sigma=sigma)
 plot(noise,col='red',pch='.')
 
 # generate quadrature points
-quadPoints <- MGHQuadPoints(mu=c(0,0),Sigma=sigma,ip=10)
+quadPoints <- init.quad(prior = list(mu=c(0,0),Sigma=sigma),ip=10)
 
 # plot quad points
 points(quadPoints$X,pch=16)
 
-# plot quad points with weights
+# plot quad points with (log) weights
 plot(noise,col='red',pch='.')
 points(quadPoints$X,col=grey(1-quadPoints$W/max(quadPoints$W)),pch=16)
 }
 }
 \seealso{
-\code{\link[fastGHQuad]{gaussHermiteData}}, used to create unidimensional quadrature points, and \code{\link{MGHQuadEval}} for evaluating the integral.
+\code{\link[fastGHQuad]{gaussHermiteData}}, used to create unidimensional quadrature points, and \code{\link{eval.quad}} for evaluating the integral.
 }
 

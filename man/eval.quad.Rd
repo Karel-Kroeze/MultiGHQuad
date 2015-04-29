@@ -10,13 +10,13 @@ eval.quad(FUN = function(x) 1, X = NULL, W = NULL, debug = FALSE, ...)
 \item{FUN}{LOG likelihood function of the parameters to be estimated.
 Defaults to \code{funtion(x) 1}, in which case only the built-in multivariate normal pdf is evaluated.}
 
-\item{X}{Matrix of quadrature points, see \code{\link{MGHQuadPoints}}. Alternatively, the list of quadrature points and weights produced by \code{\link{MGHQuadPoints}}.}
+\item{X}{Matrix of quadrature points, see \code{\link{init.quad}}. Alternatively, the list of quadrature points and weights produced by \code{\link{init.quad}}.}
 
 \item{W}{Vector of weights, or \code{NULL} if provided by \code{X}.}
 
-\item{...}{Additional arguments passed on to FUN.}
+\item{debug}{Logical, should we return evaluated FUN results?}
 
-\item{log}{Should we take the logarithm of FUN values? Defaults to FALSE, assuming FUN returns a Log-likelihood.}
+\item{...}{Additional arguments passed on to FUN.}
 }
 \value{
 A vector with the evaluated integrals, as well as a covariance matrix attribute.
@@ -29,14 +29,14 @@ The evaluated function is assumed to have a multivariate normal distribution, wi
 The default identity function \code{function(x) 1} reduces to an integral over a multivariate normal distribution with mean vector \code{mu} and covariance matrix \code{Sigma}.
 }
 \examples{
-quadPoints <- MGHQuadPoints(Q=3)
+quadPoints <- init.quad(Q=3)
 # expected value of 3-dimensional multivariate normal distribution: N(0,1).
 # (Since mean is currently fixed at zero, this is always zero.)
-integral <- MGHQuadEval(Q=3,X=quadPoints)
+integral <- eval.quad(X=quadPoints)
 integral
 round(integral)
 }
 \seealso{
-\code{\link{MGHQuadPoints}} for creating quadrature points.
+\code{\link{init.quad}} for creating quadrature points.
 }
 
