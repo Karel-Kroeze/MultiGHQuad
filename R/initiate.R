@@ -39,7 +39,8 @@
 init.quad <- function(Q = 2,
                       prior = list(mu = rep(0, Q), Sigma = diag(Q)),
                       adapt = NULL,
-                      ip=6){
+                      ip = 6,
+                      prune = TRUE){
   # TODO: account for mu != 0.
   # get quadrature points, apply normal pdf
   x <- fastGHQuad::gaussHermiteData(ip)
@@ -50,11 +51,17 @@ init.quad <- function(Q = 2,
   X <- as.matrix(expand.grid(lapply(apply(replicate(Q,x),2,list),unlist)))
   
   # compute lambda (eigen decomposition covar matrix)
-  prior$lambda <- with(eigen(prior$Sigma), vectors %*% diag(sqrt(values)))
+  trans <- function(X, Sigma) {
+    lambda <- with(eigen(Sigma), {
+      if(length(values) > 1) vectors %*% diag(sqrt(values))
+      else vectors * sqrt(values)
+    })
+    t(lambda %*% t(X))
+  }
   
   # apply mv normal pdf error function 
   # account for correlation
-  X <- t(prior$lambda %*% t(X))
+  X <- trans(X, prior$Sigma)
   # plug in prior mean
   # TODO: Check with Cees if it's really this simple
   X <- t(t(X) + prior$mu)
@@ -65,11 +72,19 @@ init.quad <- function(Q = 2,
   # combined weight is the product of the individual weights
   W <- log(apply(g,1,prod))
   
+  # pruning
+  if (prune) {
+    threshold <- log(min(w) * max(w) ^ (Q-1))
+    relevant <- W >= threshold
+    
+    W <- W[relevant]
+    X <- X[relevant,]
+  }
+  
   # adapt to best estimate
   if (!is.null(adapt)){
     # Adapt quadrature grid
-    adapt$lambda <- with(eigen(adapt$Sigma), vectors %*% diag(sqrt(values)))
-    X <- t(adapt$lambda %*% t(X))
+    X <- trans(X, adapt$Sigma)
     X <- t(t(X) + adapt$mu)
     
     # calculate 'adaptive factor'
@@ -83,7 +98,7 @@ init.quad <- function(Q = 2,
     prior$aux <- colSums(backsolve(prior$chol, t(X) - prior$mu, transpose = TRUE)^2)
     
     fact <- adapt$det - prior$det + (adapt$aux - prior$aux) / 2
-
+    
     # incorporate into weights.
     W <- W + fact
   }

@@ -5,7 +5,7 @@
 \title{Q-dimensional grid of quadrature points.}
 \usage{
 init.quad(Q = 2, prior = list(mu = rep(0, Q), Sigma = diag(Q)),
-  adapt = NULL, ip = 6)
+  adapt = NULL, ip = 6, prune = TRUE)
 }
 \arguments{
 \item{Q}{Number of dimensions. Defaults to 2. Only required when \code{mu} and \code{Sigma} are not provided.}
