@@ -15,6 +15,8 @@ init.quad(Q = 2, prior = list(mu = rep(0, Q), Sigma = diag(Q)),
 \item{adapt}{List of adaptive mean \code{mu}, = \code{vector}, and covariance matrix \code{Sigma} = \code{matrix}, if \code{NULL} no adaptation is used. Defaults to NULL.}
 
 \item{ip}{Number of quadrature points \emph{per dimension}. Defaults to 6. Note that the total number of quadrature points is \code{ip^Q}.}
+
+\item{prune}{Logical, should quadrature points with a very low weight be removed? Defaults to true. See details.}
 }
 \value{
 A list with a matrix \code{X} of \code{ip^Q} by \code{Q} quadrature points and a vector \code{W} of length \code{ip^Q} associated weights.
@@ -30,6 +32,10 @@ Take \code{A} to be;
 \deqn{A = S \times \sqrt(\Lambda)}{A = S \%*\% \sqrt(\Lambda)}
 And left multiply the quadrature points \code{z} by \code{A} to obtain correlated quadrature points \code{r};
 \deqn{r = A \times z}{r = A \%*\% z}
+
+Adaptive.
+
+Pruning.
 }
 \examples{
 # generate some noise with a given covariance matrix
