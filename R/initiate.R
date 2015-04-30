@@ -83,7 +83,7 @@ init.quad <- function(Q = 2,
     relevant <- W >= threshold
     
     W <- W[relevant]
-    X <- X[relevant,]
+    X <- X[relevant,,drop = FALSE]
   }
   
   # adapt to best estimate
