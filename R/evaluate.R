@@ -1,11 +1,19 @@
-#' Evaluation of multivariate normal distributed integral
+#' Evaluation of multivariate normal distributed expectations
 #' 
-#' Evaluates a given function with a (built-in) multivariate normal distribution with Gauss-Hermite quadrature.
+#' Evaluates the expectation of a (set of) parameters with a given function under a (built-in) multivariate normal distribution by Gauss-Hermite quadrature.
 #'
 #' The evaluated function is assumed to have a multivariate normal distribution, with a given mean vector and covariance matrix. 
-#' The default identity function \code{function(x) 1} reduces to an integral over a multivariate normal distribution with mean vector \code{mu} and covariance matrix \code{Sigma}.
+#' The default identity function \code{FUN(x) = 1} reduces a multivariate normal distribution with mean vector \code{mu} and covariance matrix \code{Sigma}.
 #' 
-#' @param FUN LOG likelihood function of the parameters to be estimated. 
+#' The integral under evaluation is;
+#' \deqn{\int_{-\Infty}^{\Infty} N(\mu, \Sigma) \times FUN(X) \times X dX}{Int Prior * FUN(X) * X dX}
+#' 
+#' Hence, if left default, the result is the expectation \eqn{E(N(\mu,\Sigma))}{ of N(mu, Sigma)}.
+#' 
+#' Note: FUN is evaluated in a loop, vectorisation is a future possibility. FUN must return a single scalar on the log-scale.
+#' 
+#' 
+#' @param FUN log likelihood function of the parameters to be estimated. 
 #'     Defaults to \code{funtion(x) 1}, in which case only the built-in multivariate normal pdf is evaluated.
 #' @param X Matrix of quadrature points, see \code{\link{init.quad}}. Alternatively, the list of quadrature points and weights produced by \code{\link{init.quad}}.
 #' @param W Vector of weights, or \code{NULL} if provided by \code{X}.
@@ -14,14 +22,6 @@
 #' @return A vector with the evaluated integrals, as well as a covariance matrix attribute.
 #' @seealso \code{\link{init.quad}} for creating quadrature points.
 #' @export
-#' @examples
-#' quadPoints <- init.quad(Q=3)
-#' # expected value of 3-dimensional multivariate normal distribution: N(0,1). 
-#' # (Since mean is currently fixed at zero, this is always zero.)
-#' integral <- eval.quad(X=quadPoints) 
-#' integral
-#' round(integral)
-
 eval.quad <- function(FUN = function(x) 1, X = NULL, W = NULL, debug = FALSE, ...){
   # allow list input
   if (is.list(X)){

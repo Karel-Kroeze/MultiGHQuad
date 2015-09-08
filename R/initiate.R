@@ -2,17 +2,8 @@
 #' 
 #' Creates a flattened, rotated grid that incorporates correlation through an eigenvalue decomposition of the covariance matrix.
 #'
-#' Creates a Q-dimensional grid by calling \code{\link{expand.grid}} on Q vectors of unidimensional quadrature points.
-#' The grid is corrected for covariation by eigenvalue decomposition;
-#' \deqn{\Sigma = S \times \Lambda \times S^T}{ Sigma = S \%*\% Lambda \%*\% t(S) }
-#' Take \code{A} to be;
-#' \deqn{A = S \times \sqrt(\Lambda)}{A = S \%*\% \sqrt(\Lambda)}
-#' And left multiply the quadrature points \code{z} by \code{A} to obtain correlated quadrature points \code{r};
-#' \deqn{r = A \times z}{r = A \%*\% z}
-#' 
-#' Adaptive.
-#' 
-#' Pruning.
+#' Creates a Q-dimensional grid by calling \code{\link{expand.grid}} on Q vectors of unidimensional quadrature points obtained with \code{\link[fastGHQuad]{gaussHermiteData}}.
+#' The grid is then corrected for a prior distribution, and can optionally be adapted around a previous estimate. The resultant grid can be pruned to remove quadrature points that are unlikely to add information.
 #' 
 #' @param Q Number of dimensions. Defaults to 2. Only required when \code{mu} and \code{Sigma} are not provided.
 #' @param prior List of prior mean \code{mu}, = \code{vector}, and covariance matrix \code{Sigma} = \code{matrix}, defaults to zero vector and identity matrix respectively.
@@ -22,25 +13,17 @@
 #' @return A list with a matrix \code{X} of \code{ip^Q} by \code{Q} quadrature points and a vector \code{W} of length \code{ip^Q} associated weights.
 #' @seealso \code{\link[fastGHQuad]{gaussHermiteData}}, used to create unidimensional quadrature points, and \code{\link{eval.quad}} for evaluating the integral.
 #' @export
-#' @examples
-#' # generate some noise with a given covariance matrix
-#' \dontrun{
-#' require(mvtnorm)
-#' sigma <- matrix(c(1,.8,.8,1),ncol=2,byrow=T)
-#' noise <- rmvnorm(1e4,mean=c(0,0),sigma=sigma)
-#' # plot noise
-#' plot(noise,col='red',pch='.')
-#' 
-#' # generate quadrature points
-#' quadPoints <- init.quad(prior = list(mu=c(0,0),Sigma=sigma),ip=10)
-#' 
-#' # plot quad points
-#' points(quadPoints$X,pch=16)
-#' 
-#' # plot quad points with (log) weights
-#' plot(noise,col='red',pch='.')
-#' points(quadPoints$X,col=grey(1-quadPoints$W/max(quadPoints$W)),pch=16)
-#' }
+# mu <- c(0,0)
+# sigma <- matrix(c(1,.5,.5,1),2,2)
+# grid <- init.quad(Q = 2, prior = list(mu = mu, Sigma = sigma), ip = 10, prune = FALSE)
+# grid2 <- init.quad(Q = 2, prior = list(mu = mu, Sigma = sigma), ip = 10, prune = TRUE)
+# require(mvtnorm)
+# normal <- rmvnorm(1000, mu, sigma)
+# plot(normal, xlim = c(-6,6), ylim = c(-6,6))
+# points(grid$X, cex = exp(grid$W)/max(exp(grid$W))*4, col = 'red', pch = 20)
+# points(grid2$X, cex = exp(grid2$W)/max(exp(grid2$W))*4, col = 'green', pch = 20)
+
+
 init.quad <- function(Q = 2,
                       prior = list(mu = rep(0, Q), Sigma = diag(Q)),
                       adapt = NULL,
