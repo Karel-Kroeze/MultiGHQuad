@@ -13,15 +13,37 @@
 #' @return A list with a matrix \code{X} of \code{ip^Q} by \code{Q} quadrature points and a vector \code{W} of length \code{ip^Q} associated weights.
 #' @seealso \code{\link[fastGHQuad]{gaussHermiteData}}, used to create unidimensional quadrature points, and \code{\link{eval.quad}} for evaluating the integral.
 #' @export
-# mu <- c(0,0)
-# sigma <- matrix(c(1,.5,.5,1),2,2)
-# grid <- init.quad(Q = 2, prior = list(mu = mu, Sigma = sigma), ip = 10, prune = FALSE)
-# grid2 <- init.quad(Q = 2, prior = list(mu = mu, Sigma = sigma), ip = 10, prune = TRUE)
-# require(mvtnorm)
-# normal <- rmvnorm(1000, mu, sigma)
-# plot(normal, xlim = c(-6,6), ylim = c(-6,6))
-# points(grid$X, cex = exp(grid$W)/max(exp(grid$W))*4, col = 'red', pch = 20)
-# points(grid2$X, cex = exp(grid2$W)/max(exp(grid2$W))*4, col = 'green', pch = 20)
+#' 
+#' 
+#' ### basic quadrature grids.
+mu <- c(0,0)
+sigma <- matrix(c(1,.5,.5,1),2,2)
+grid <- init.quad(Q = 2, prior = list(mu = mu, Sigma = sigma), ip = 10, prune = FALSE)
+grid2 <- init.quad(Q = 2, prior = list(mu = mu, Sigma = sigma), ip = 10, prune = TRUE)
+library(mvtnorm)
+normal <- rmvnorm(1000, mu, sigma)
+# noise
+plot(normal, xlim = c(-6,6), ylim = c(-6,6), pch = 19, col = rgb(0,0,0,.5))
+# full quad grid
+points(grid$X, cex = exp(grid$W)/max(exp(grid$W))*4, col = 'red', pch = 20)
+# pruned quad grid
+points(grid2$X, cex = exp(grid2$W)/max(exp(grid2$W))*4, col = 'green', pch = 20)
+
+### Adaptive quadrature grid
+prior <- list(mu = c(0,0), Sigma = matrix(c(1,.5,.5,1),2,2))
+dist <- list(mu = c(-2,2), Sigma = prior$Sigma)
+grid <- init.quad(Q = 2, prior, ip = 10, prune = FALSE)
+library(mvtnorm)
+normal <- rmvnorm(1000, dist$mu, dist$Sigma)
+# noise, centered at (-2, 2)
+plot(normal, xlim = c(-6,6), ylim = c(-6,6), pch = 19, col = rgb(0,0,0,.5))
+# initial quad grid, centered at (0, 0)
+points(grid$X, cex = exp(grid$W)/max(exp(grid$W))*4, col = 'red', pch = 20)
+# adapted grid
+grid2 <- init.quad(Q =2, prior, adapt = dist, ip = 10, prune = FALSE)
+points(grid2$X, cex = exp(grid2$W)/max(exp(grid2$W))*4, col = 'green', pch = 20)
+
+
 
 
 init.quad <- function(Q = 2,
@@ -41,6 +63,7 @@ init.quad <- function(Q = 2,
   # compute lambda (eigen decomposition covar matrix)
   trans <- function(X, Sigma) {
     lambda <- with(eigen(Sigma), {
+      if (any(values < 0)) warning("Matrix is not positive definite.")
       if(length(values) > 1) vectors %*% diag(sqrt(values))
       else vectors * sqrt(values)
     })

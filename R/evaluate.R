@@ -22,7 +22,7 @@
 #' @return A vector with the evaluated integrals, as well as a covariance matrix attribute.
 #' @seealso \code{\link{init.quad}} for creating quadrature points.
 #' @export
-eval.quad <- function(FUN = function(x) 1, X = NULL, W = NULL, debug = FALSE, ...){
+eval.quad <- function(FUN = function(x) 1, X = NULL, ..., W = NULL, debug = FALSE){
   # allow list input
   if (is.list(X)){
     W <- X$W

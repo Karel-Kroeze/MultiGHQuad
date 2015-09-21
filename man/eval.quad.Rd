@@ -4,7 +4,7 @@
 \alias{eval.quad}
 \title{Evaluation of multivariate normal distributed expectations}
 \usage{
-eval.quad(FUN = function(x) 1, X = NULL, W = NULL, debug = FALSE, ...)
+eval.quad(FUN = function(x) 1, X = NULL, ..., W = NULL, debug = FALSE)
 }
 \arguments{
 \item{FUN}{log likelihood function of the parameters to be estimated.
@@ -12,11 +12,11 @@ Defaults to \code{funtion(x) 1}, in which case only the built-in multivariate no
 
 \item{X}{Matrix of quadrature points, see \code{\link{init.quad}}. Alternatively, the list of quadrature points and weights produced by \code{\link{init.quad}}.}
 
+\item{...}{Additional arguments passed on to FUN.}
+
 \item{W}{Vector of weights, or \code{NULL} if provided by \code{X}.}
 
 \item{debug}{Logical, should we return evaluated FUN results?}
-
-\item{...}{Additional arguments passed on to FUN.}
 }
 \value{
 A vector with the evaluated integrals, as well as a covariance matrix attribute.
@@ -33,7 +33,7 @@ The integral under evaluation is;
 
 Hence, if left default, the result is the expectation \eqn{E(N(\mu,\Sigma))}{ of N(mu, Sigma)}.
 
-Note: FUN is evaluated in a loop, vectorisation is a future possibility.
+Note: FUN is evaluated in a loop, vectorisation is a future possibility. FUN must return a single scalar on the log-scale.
 }
 \seealso{
 \code{\link{init.quad}} for creating quadrature points.

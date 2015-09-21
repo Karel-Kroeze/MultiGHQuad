@@ -9,7 +9,8 @@ Description: Uses a transformed and rotated n-dimensional grid of quadrature
     points to calculate the numerical integral of n multivariate normally
     distributed parameters.
 License: GPL-3
-Depends:
+Depends: 
     R (>= 3.0.0)
-Imports:
+Imports: 
     fastGHQuad (>= 0.2)
+Suggests: testthat
