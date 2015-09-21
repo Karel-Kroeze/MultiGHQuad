@@ -13,39 +13,33 @@
 #' @return A list with a matrix \code{X} of \code{ip^Q} by \code{Q} quadrature points and a vector \code{W} of length \code{ip^Q} associated weights.
 #' @seealso \code{\link[fastGHQuad]{gaussHermiteData}}, used to create unidimensional quadrature points, and \code{\link{eval.quad}} for evaluating the integral.
 #' @export
+#' @examples # ### basic quadrature grids.
+#' mu <- c(0,0)
+#' sigma <- matrix(c(1,.5,.5,1),2,2)
+#' grid <- init.quad(Q = 2, prior = list(mu = mu, Sigma = sigma), ip = 10, prune = FALSE)
+#' grid2 <- init.quad(Q = 2, prior = list(mu = mu, Sigma = sigma), ip = 10, prune = TRUE)
+#' library(mvtnorm)
+#' normal <- rmvnorm(1000, mu, sigma)
+#' # noise
+#' plot(normal, xlim = c(-6,6), ylim = c(-6,6), pch = 19, col = rgb(0,0,0,.5))
+#' # full quad grid
+#' points(grid$X, cex = exp(grid$W)/max(exp(grid$W))*4, col = 'red', pch = 20)
+#' # pruned quad grid
+#' points(grid2$X, cex = exp(grid2$W)/max(exp(grid2$W))*4, col = 'green', pch = 20)
 #' 
-#' 
-#' ### basic quadrature grids.
-mu <- c(0,0)
-sigma <- matrix(c(1,.5,.5,1),2,2)
-grid <- init.quad(Q = 2, prior = list(mu = mu, Sigma = sigma), ip = 10, prune = FALSE)
-grid2 <- init.quad(Q = 2, prior = list(mu = mu, Sigma = sigma), ip = 10, prune = TRUE)
-library(mvtnorm)
-normal <- rmvnorm(1000, mu, sigma)
-# noise
-plot(normal, xlim = c(-6,6), ylim = c(-6,6), pch = 19, col = rgb(0,0,0,.5))
-# full quad grid
-points(grid$X, cex = exp(grid$W)/max(exp(grid$W))*4, col = 'red', pch = 20)
-# pruned quad grid
-points(grid2$X, cex = exp(grid2$W)/max(exp(grid2$W))*4, col = 'green', pch = 20)
-
-### Adaptive quadrature grid
-prior <- list(mu = c(0,0), Sigma = matrix(c(1,.5,.5,1),2,2))
-dist <- list(mu = c(-2,2), Sigma = prior$Sigma)
-grid <- init.quad(Q = 2, prior, ip = 10, prune = FALSE)
-library(mvtnorm)
-normal <- rmvnorm(1000, dist$mu, dist$Sigma)
-# noise, centered at (-2, 2)
-plot(normal, xlim = c(-6,6), ylim = c(-6,6), pch = 19, col = rgb(0,0,0,.5))
-# initial quad grid, centered at (0, 0)
-points(grid$X, cex = exp(grid$W)/max(exp(grid$W))*4, col = 'red', pch = 20)
-# adapted grid
-grid2 <- init.quad(Q =2, prior, adapt = dist, ip = 10, prune = FALSE)
-points(grid2$X, cex = exp(grid2$W)/max(exp(grid2$W))*4, col = 'green', pch = 20)
-
-
-
-
+#' ### Adaptive quadrature grid
+#' prior <- list(mu = c(0,0), Sigma = matrix(c(1,.5,.5,1),2,2))
+#' dist <- list(mu = c(-2,2), Sigma = prior$Sigma)
+#' grid <- init.quad(Q = 2, prior, ip = 10, prune = FALSE)
+#' library(mvtnorm)
+#' normal <- rmvnorm(1000, dist$mu, dist$Sigma)
+#' # noise, centered at (-2, 2)
+#' plot(normal, xlim = c(-6,6), ylim = c(-6,6), pch = 19, col = rgb(0,0,0,.5))
+#' # initial quad grid, centered at (0, 0)
+#' points(grid$X, cex = exp(grid$W)/max(exp(grid$W))*4, col = 'red', pch = 20)
+#' # adapted grid
+#' grid2 <- init.quad(Q =2, prior, adapt = dist, ip = 10, prune = FALSE)
+#' points(grid2$X, cex = exp(grid2$W)/max(exp(grid2$W))*4, col = 'green', pch = 20)
 init.quad <- function(Q = 2,
                       prior = list(mu = rep(0, Q), Sigma = diag(Q)),
                       adapt = NULL,
@@ -58,7 +52,7 @@ init.quad <- function(Q = 2,
   x <- x$x * sqrt(2)
   
   # (if anyone knows an easy way to assign a single vector x times to x list elements, please tell me. )
-  X <- as.matrix(expand.grid(lapply(apply(replicate(Q,x),2,list),unlist)))
+  XX <- X <- as.matrix(expand.grid(lapply(apply(replicate(Q,x),2,list),unlist)))
   
   # compute lambda (eigen decomposition covar matrix)
   trans <- function(X, Sigma) {
@@ -74,7 +68,6 @@ init.quad <- function(Q = 2,
   # account for correlation
   X <- trans(X, prior$Sigma)
   # plug in prior mean
-  # TODO: Check with Cees if it's really this simple
   X <- t(t(X) + prior$mu)
   
   # calculate weights
@@ -82,15 +75,6 @@ init.quad <- function(Q = 2,
   g <- as.matrix(expand.grid(lapply(apply(replicate(Q,w),2,list),unlist)))
   # combined weight is the product of the individual weights
   W <- log(apply(g,1,prod))
-  
-  # pruning
-  if (prune) {
-    threshold <- log(min(w) * max(w) ^ (Q-1))
-    relevant <- W >= threshold
-    
-    W <- W[relevant]
-    X <- X[relevant,,drop = FALSE]
-  }
   
   # adapt to best estimate
   if (!is.null(adapt)){
@@ -102,16 +86,25 @@ init.quad <- function(Q = 2,
     # Ripped from mvtnorm/dmvnorm, note that the -.5 * Q * log(2*pi) term in each ll cancels out, the remainder is aux.
     adapt$chol <- chol(adapt$Sigma)
     adapt$det <- sum(log(diag(adapt$chol)))
-    adapt$aux <- colSums(backsolve(adapt$chol, t(X) - adapt$mu, transpose = TRUE)^2)
+    adapt$aux <- colSums(backsolve(adapt$chol, t(X) - adapt$mu, transpose = TRUE))
     
     prior$chol <- chol(prior$Sigma)
     prior$det <- sum(log(diag(prior$chol)))
-    prior$aux <- colSums(backsolve(prior$chol, t(X) - prior$mu, transpose = TRUE)^2)
+    prior$aux <- colSums(backsolve(prior$chol, t(X) - prior$mu, transpose = TRUE))
     
-    fact <- adapt$det - prior$det + (adapt$aux - prior$aux) / 2
+    fact <- (adapt$aux - prior$aux) / 2 - adapt$det - prior$det
     
     # incorporate into weights.
     W <- W + fact
+  }
+  
+  # pruning
+  if (prune) {
+    threshold <- log(min(w) * max(w) ^ (Q-1))
+    relevant <- W >= threshold
+    
+    W <- W[relevant]
+    X <- X[relevant,,drop = FALSE]
   }
   
   return(invisible(list(X=X,W=W)))
