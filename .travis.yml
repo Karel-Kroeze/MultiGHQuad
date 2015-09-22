@@ -21,3 +21,8 @@ r_apt_packages:
 r_packages:
   - mvtnorm
   - testthat
+  
+notifications:
+  email:
+    on_success: change
+    on_failure: change
