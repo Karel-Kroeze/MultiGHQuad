@@ -8,6 +8,4 @@ Quadrature points are taken from package fastGHQuad, and expanded into a multidi
 
 &copy; Karel Kroeze 2014.
 
-
-Usage
--
+[![Build Status](https://travis-ci.org/Karel-Kroeze/MultiGHQuad.svg?branch=master)](https://travis-ci.org/Karel-Kroeze/MultiGHQuad)
