@@ -14,3 +14,6 @@ r_build_args: " "
 r_check_args: "--as-cran"
 
 warnings_are_errors: true
+
+r_binary_packages:
+  - mvtnorm
