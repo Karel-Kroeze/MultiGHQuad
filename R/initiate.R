@@ -13,7 +13,9 @@
 #' @return A list with a matrix \code{X} of \code{ip^Q} by \code{Q} quadrature points and a vector \code{W} of length \code{ip^Q} associated weights.
 #' @seealso \code{\link[fastGHQuad]{gaussHermiteData}}, used to create unidimensional quadrature points, and \code{\link{eval.quad}} for evaluating the integral.
 #' @export
-#' @examples # ### basic quadrature grids.
+#' @examples 
+#' \dontrun{
+#' ### basic quadrature grid /w pruning.
 #' mu <- c(0,0)
 #' sigma <- matrix(c(1,.5,.5,1),2,2)
 #' grid <- init.quad(Q = 2, prior = list(mu = mu, Sigma = sigma), ip = 10, prune = FALSE)
@@ -40,19 +42,25 @@
 #' # adapted grid
 #' grid2 <- init.quad(Q =2, prior, adapt = dist, ip = 10, prune = FALSE)
 #' points(grid2$X, cex = exp(grid2$W)/max(exp(grid2$W))*4, col = 'green', pch = 20)
+#' }
 init.quad <- function(Q = 2,
                       prior = list(mu = rep(0, Q), Sigma = diag(Q)),
                       adapt = NULL,
                       ip = 6,
                       prune = TRUE){
-  # TODO: account for mu != 0.
+  
+  # allow previous estimate input for adapt
+  if (!is.null(adapt) && attr(adapt, "variance")){
+    adapt <- list(mu = adapt, Sigma = attr(adapt, "variance"))
+  }
+  
   # get quadrature points, apply normal pdf
   x <- fastGHQuad::gaussHermiteData(ip)
   w <- x$w / sqrt(pi)
   x <- x$x * sqrt(2)
   
   # (if anyone knows an easy way to assign a single vector x times to x list elements, please tell me. )
-  XX <- X <- as.matrix(expand.grid(lapply(apply(replicate(Q,x),2,list),unlist)))
+  X <- as.matrix(expand.grid(lapply(apply(replicate(Q,x),2,list),unlist)))
   
   # compute lambda (eigen decomposition covar matrix)
   trans <- function(X, Sigma) {

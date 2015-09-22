@@ -42,16 +42,3 @@ for (q in 1:3) for (mu in list(rep(0,q), seq(-3,3,length.out = q))) for (Sigma i
     expect_equal(est, mu, tolerance = 1E-5)
   })
 }
-
-
-# # check if adaptive stuff works.
-# for (q in 1:4){
-#   prior <- list(mu = rep(5, q), Sigma = diag(q) / 2)
-#   qp <- init.quad(q, prior, ip = 4)
-#   
-#   for (i in 1:20){
-#     est <- eval.quad(dmvnorm, qp, log = TRUE)
-#     print(est)
-#     qp <- init.quad(q, prior, adapt = list(mu = est, Sigma = attr(est, "variance")), ip = 6)
-#   }
-# }
