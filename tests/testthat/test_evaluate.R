@@ -1,5 +1,4 @@
 library(MultiGHQuad)
-library(mvtnorm)
 context("Expectation is evaluated correctly")
 
 pos.def <- function(n, ev = runif(n, 0, 10)) 
@@ -32,13 +31,13 @@ for (q in 1:3) for (mu in list(rep(0,q), seq(-3,3,length.out = q))) for (Sigma i
     expect_equal(var, Sigma, tolerance = 1E-5)
   })
   
-  # X^2
-  est <- eval.quad(dmvnorm, qp, mean = mu, sigma = Sigma, log = TRUE)
-  var <- attr(est, "variance")
-  attr(est, "variance") <- NULL
-  
-  # should be mean
-  test_that("Normal expectation", {
-    expect_equal(est, mu, tolerance = 1E-5)
-  })
+#   # X^2
+#   est <- eval.quad(dmvnorm, qp, mean = mu, sigma = Sigma, log = TRUE)
+#   var <- attr(est, "variance")
+#   attr(est, "variance") <- NULL
+#   
+#   # should be mean
+#   test_that("Normal expectation", {
+#     expect_equal(est, mu, tolerance = 1E-5)
+#   })
 }
