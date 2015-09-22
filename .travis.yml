@@ -15,5 +15,9 @@ r_check_args: "--as-cran"
 
 warnings_are_errors: true
 
-r_binary_packages:
+r_apt_packages:
   - mvtnorm
+
+r_packages:
+  - mvtnorm
+  - testthat
