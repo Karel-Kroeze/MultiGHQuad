@@ -1,7 +1,7 @@
 Package: MultiGHQuad
 Type: Package
 Title: Multidimensional Gauss-Hermite Quadrature
-Version: 1
+Version: 1.1
 Date: 2015-09-22
 Author: Karel Kroeze
 Maintainer: Karel Kroeze <k.a.kroeze@utwente.nl>
@@ -10,7 +10,7 @@ Description: Uses a transformed, rotated and optionally adapted n-dimensional gr
     distributed parameters.
 License: GPL-3
 Depends: 
-    R (>= 3.2.2)
+    R (>= 3.2.0)
 Imports: 
     fastGHQuad (>= 0.2)
 Suggests: testthat
