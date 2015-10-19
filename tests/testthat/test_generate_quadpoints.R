@@ -1,8 +1,6 @@
 library(MultiGHQuad)
 context("Quadrature points are generated correctly")
 
-fastGHQuad::gaussHermiteData(20)
-
 f.data <- fastGHQuad::gaussHermiteData(20)
 m.data <- init.quad(1, ip = 20, prune = FALSE)
 
