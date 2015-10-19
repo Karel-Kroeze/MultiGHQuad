@@ -11,6 +11,29 @@ test_that("Length and format", {
   expect_equal(dim(m.data$X), c(20,1))
 })
 
+estimate <- c(1,2)
+attr(estimate, 'variance') <- diag(2)
+
+estimateb <- 1
+attr(estimateb, 'variance') <- diag(1)
+
+test_that("Adapt accepts previous estimate", {
+  expect_error(init.quad(1, adapt = estimate))
+  expect_is(init.quad(2, adapt = estimate), "list")
+  expect_error(init.quad(3, adapt = estimate))
+  expect_is(init.quad(1, adapt = estimateb), "list")
+  expect_error(init.quad(2, adapt = estimateb))
+})
+
+adapt <- list(mu = c(1,1), Sigma = diag(2))
+
+test_that("Adapt accepts list", {
+  expect_error(init.quad(1, adapt = adapt))
+  expect_is(init.quad(2, adapt = adapt), "list")
+  expect_error(init.quad(3, adapt = adapt))
+})
+
+
 test_that("Univariate Quad points match", {
   expect_equal(f.data$x, m.data$X[,1] / sqrt(2))
   expect_equal(f.data$w, exp(m.data$W) * sqrt(pi))
