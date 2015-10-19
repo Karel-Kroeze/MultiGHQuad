@@ -50,9 +50,12 @@ init.quad <- function(Q = 2,
                       prune = TRUE){
   
   # allow previous estimate input for adapt
-  if (!is.null(adapt) && attr(adapt, "variance")){
+  if (!is.null(adapt) && !is.null(attr(adapt, "variance"))){
     adapt <- list(mu = adapt, Sigma = attr(adapt, "variance"))
   }
+  
+  # make sure adapt is of the right size.
+  if (!is.null(adapt) && (!is.list(adapt) || length(adapt$mu) != Q || dim(adapt$Sigma) != c(Q, Q))) stop("Size or format of Adapt argument invalid.")
   
   # get quadrature points, apply normal pdf
   x <- fastGHQuad::gaussHermiteData(ip)
