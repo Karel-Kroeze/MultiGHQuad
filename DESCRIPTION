@@ -5,12 +5,14 @@ Version: 1.1
 Date: 2015-09-22
 Author: Karel Kroeze
 Maintainer: Karel Kroeze <k.a.kroeze@utwente.nl>
-Description: Uses a transformed, rotated and optionally adapted n-dimensional grid of quadrature
-    points to calculate the numerical integral of n multivariate normal
-    distributed parameters.
+Description: Uses a transformed, rotated and optionally adapted n-dimensional
+    grid of quadrature points to calculate the numerical integral of n multivariate
+    normal distributed parameters.
 License: GPL-3
-Depends: 
+Depends:
     R (>= 3.2.0)
-Imports: 
+Imports:
     fastGHQuad (>= 0.2)
-Suggests: testthat
+Suggests:
+    testthat
+RoxygenNote: 5.0.0

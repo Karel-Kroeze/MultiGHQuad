@@ -47,7 +47,8 @@ init.quad <- function(Q = 2,
                       prior = list(mu = rep(0, Q), Sigma = diag(Q)),
                       adapt = NULL,
                       ip = 6,
-                      prune = TRUE){
+                      prune = TRUE,
+                      debug = FALSE){
   
   # allow previous estimate input for adapt
   if (!is.null(adapt) && !is.null(attr(adapt, "variance"))){
@@ -75,11 +76,16 @@ init.quad <- function(Q = 2,
     t(lambda %*% t(X))
   }
   
-  # apply mv normal pdf error function 
-  # account for correlation
-  X <- trans(X, prior$Sigma)
-  # plug in prior mean
-  X <- t(t(X) + prior$mu)
+  # debugging, plot noise under the prior distribution and initial grid.
+  if (debug){
+    noise <- rmvnorm(10000, prior$mu, prior$Sigma)
+    plot(noise,
+         col = 'grey', pch = 20, cex = .2,
+         xlim = range(noise[,1]) * 1.1,
+         ylim = range(noise[,2]) * 1.1)
+    points(X, pch = 20)
+  }
+  
   
   # calculate weights
   # same as above, roundabout way to get the combn weights for each combination of quad points
@@ -87,11 +93,24 @@ init.quad <- function(Q = 2,
   # combined weight is the product of the individual weights
   W <- log(apply(g,1,prod))
   
-  # adapt to best estimate
-  if (!is.null(adapt)){
+  if (debug){
+    points(X, pch = 20, col = 'green', cex = exp(W) / max(exp(W)) * 5)
+    cat("\ngreen is transformed to prior")
+  }
+  
+  # apply mv normal pdf error function if no earlier estimate is available
+  if (is.null(adapt)){
+    X <- trans(X, prior$Sigma)
+  }
+  # adapt to best estimate if there is
+  else {
     # Adapt quadrature grid
     X <- trans(X, adapt$Sigma)
-    X <- t(t(X) + adapt$mu)
+    
+    if (debug){
+      points(X, pch = 20, col = 'blue', cex = exp(W) / max(exp(W)) * 5)
+      cat("\nblue is transformed to posterior")
+    }
     
     # calculate 'adaptive factor'
     # Ripped from mvtnorm/dmvnorm, note that the -.5 * Q * log(2*pi) term in each ll cancels out, the remainder is aux.
@@ -109,6 +128,18 @@ init.quad <- function(Q = 2,
     W <- W + fact
   }
   
+  # plug in prior / adaptive mean
+  if (is.null(adapt)){
+    X <- t(t(X) + prior$mu)
+  } else {
+    X <- t(t(X) + adapt$mu)
+  }
+  
+  if(debug){
+    points(X, pch = 20, col = 'orange', cex = exp(W) / max(exp(W)) * 5)
+    cat('\norange is mean shifted')
+  }
+  
   # pruning
   if (prune) {
     threshold <- log(min(w) * max(w) ^ (Q-1))
@@ -116,7 +147,13 @@ init.quad <- function(Q = 2,
     
     W <- W[relevant]
     X <- X[relevant,,drop = FALSE]
+    
+    if(debug){
+      points(X, pch = 20, col = 'pink', cex = exp(W) / max(exp(W)) * 5)
+      cat('\npink is pruned.')
+    }
   }
+  
   
   return(invisible(list(X=X,W=W)))
 }
