@@ -9,7 +9,7 @@
 #' @param prior List of prior mean \code{mu}, = \code{vector}, and covariance matrix \code{Sigma} = \code{matrix}, defaults to zero vector and identity matrix respectively.
 #' @param adapt List of adaptive mean \code{mu}, = \code{vector}, and covariance matrix \code{Sigma} = \code{matrix}, if \code{NULL} no adaptation is used. Defaults to NULL.
 #' @param ip Number of quadrature points \emph{per dimension}. Defaults to 6. Note that the total number of quadrature points is \code{ip^Q}.
-#' @param prune Logical, should quadrature points with a very low weight be removed? Defaults to true. See details.
+#' @param prune Logical, should quadrature points with a very low weight be removed? Defaults to false. See details.
 #' @return A list with a matrix \code{X} of \code{ip^Q} by \code{Q} quadrature points and a vector \code{W} of length \code{ip^Q} associated weights.
 #' @seealso \code{\link[fastGHQuad]{gaussHermiteData}}, used to create unidimensional quadrature points, and \code{\link{eval.quad}} for evaluating the integral.
 #' @export
@@ -47,7 +47,7 @@ init.quad <- function(Q = 2,
                       prior = list(mu = rep(0, Q), Sigma = diag(Q)),
                       adapt = NULL,
                       ip = 6,
-                      prune = TRUE,
+                      prune = FALSE,
                       debug = FALSE){
   
   # allow previous estimate input for adapt
