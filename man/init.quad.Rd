@@ -5,7 +5,7 @@
 \title{Q-dimensional grid of quadrature points.}
 \usage{
 init.quad(Q = 2, prior = list(mu = rep(0, Q), Sigma = diag(Q)),
-  adapt = NULL, ip = 6, prune = TRUE, debug = FALSE)
+  adapt = NULL, ip = 6, prune = FALSE, debug = FALSE)
 }
 \arguments{
 \item{Q}{Number of dimensions. Defaults to 2. Only required when \code{mu} and \code{Sigma} are not provided.}
@@ -16,7 +16,9 @@ init.quad(Q = 2, prior = list(mu = rep(0, Q), Sigma = diag(Q)),
 
 \item{ip}{Number of quadrature points \emph{per dimension}. Defaults to 6. Note that the total number of quadrature points is \code{ip^Q}.}
 
-\item{prune}{Logical, should quadrature points with a very low weight be removed? Defaults to true. See details.}
+\item{prune}{Logical, should quadrature points with a very low weight be removed? Defaults to false. See details.}
+
+\item{debug}{Logical, draws debugging plots when true.}
 }
 \value{
 A list with a matrix \code{X} of \code{ip^Q} by \code{Q} quadrature points and a vector \code{W} of length \code{ip^Q} associated weights.
@@ -29,7 +31,6 @@ Creates a Q-dimensional grid by calling \code{\link{expand.grid}} on Q vectors o
 The grid is then corrected for a prior distribution, and can optionally be adapted around a previous estimate. The resultant grid can be pruned to remove quadrature points that are unlikely to add information.
 }
 \examples{
-\dontrun{
 ### basic quadrature grid /w pruning.
 mu <- c(0,0)
 sigma <- matrix(c(1,.5,.5,1),2,2)
@@ -57,7 +58,6 @@ points(grid$X, cex = exp(grid$W)/max(exp(grid$W))*4, col = 'red', pch = 20)
 # adapted grid
 grid2 <- init.quad(Q =2, prior, adapt = dist, ip = 10, prune = FALSE)
 points(grid2$X, cex = exp(grid2$W)/max(exp(grid2$W))*4, col = 'green', pch = 20)
-}
 }
 \seealso{
 \code{\link[fastGHQuad]{gaussHermiteData}}, used to create unidimensional quadrature points, and \code{\link{eval.quad}} for evaluating the integral.

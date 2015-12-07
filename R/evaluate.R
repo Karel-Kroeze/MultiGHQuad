@@ -22,7 +22,6 @@
 #' @seealso \code{\link{init.quad}} for creating quadrature points.
 #' @export
 #' @examples
-#' \dontrun{
 #' ### Basic example; E(X), X ~ N(0,1)
 #' grid <- init.quad(Q = 1, prior = list(mu = 0, Sigma = diag(1)))
 #' eval.quad(X = grid)
@@ -92,7 +91,6 @@
 #' points(grid3$X, exp(grid3$W)*max(p$y), pch = 20, col = "grey")
 #' est <- eval.quad(rasch, grid3, beta = 2, responses = rep(c(0,1), each = 5))
 #' print(est)
-#' }
 eval.quad <- function(FUN = function(x) 1, X = NULL, ..., W = NULL, debug = FALSE){
   # allow list input
   if (is.list(X)){

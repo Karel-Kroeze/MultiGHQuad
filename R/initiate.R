@@ -10,11 +10,12 @@
 #' @param adapt List of adaptive mean \code{mu}, = \code{vector}, and covariance matrix \code{Sigma} = \code{matrix}, if \code{NULL} no adaptation is used. Defaults to NULL.
 #' @param ip Number of quadrature points \emph{per dimension}. Defaults to 6. Note that the total number of quadrature points is \code{ip^Q}.
 #' @param prune Logical, should quadrature points with a very low weight be removed? Defaults to false. See details.
+#' @param debug Logical, draws debugging plots when true.
 #' @return A list with a matrix \code{X} of \code{ip^Q} by \code{Q} quadrature points and a vector \code{W} of length \code{ip^Q} associated weights.
 #' @seealso \code{\link[fastGHQuad]{gaussHermiteData}}, used to create unidimensional quadrature points, and \code{\link{eval.quad}} for evaluating the integral.
 #' @export
+#' @importFrom mvtnorm rmvnorm
 #' @examples 
-#' \dontrun{
 #' ### basic quadrature grid /w pruning.
 #' mu <- c(0,0)
 #' sigma <- matrix(c(1,.5,.5,1),2,2)
@@ -42,7 +43,6 @@
 #' # adapted grid
 #' grid2 <- init.quad(Q =2, prior, adapt = dist, ip = 10, prune = FALSE)
 #' points(grid2$X, cex = exp(grid2$W)/max(exp(grid2$W))*4, col = 'green', pch = 20)
-#' }
 init.quad <- function(Q = 2,
                       prior = list(mu = rep(0, Q), Sigma = diag(Q)),
                       adapt = NULL,

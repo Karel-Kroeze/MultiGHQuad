@@ -2,3 +2,4 @@
 
 export(eval.quad)
 export(init.quad)
+importFrom(mvtnorm,rmvnorm)

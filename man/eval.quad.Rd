@@ -36,7 +36,6 @@ If left default, the result is the expectation \eqn{E(X)}, where \eqn{X \~ N(\mu
 Note: FUN is evaluated in a loop, vectorisation is a future possibility. FUN must return a single scalar on the natural log-scale.
 }
 \examples{
-\dontrun{
 ### Basic example; E(X), X ~ N(0,1)
 grid <- init.quad(Q = 1, prior = list(mu = 0, Sigma = diag(1)))
 eval.quad(X = grid)
@@ -106,7 +105,6 @@ p <- plot(function(x) exp(dnorm(x, log = TRUE) +
 points(grid3$X, exp(grid3$W)*max(p$y), pch = 20, col = "grey")
 est <- eval.quad(rasch, grid3, beta = 2, responses = rep(c(0,1), each = 5))
 print(est)
-}
 }
 \seealso{
 \code{\link{init.quad}} for creating quadrature points.
