@@ -18,9 +18,10 @@
 #' @param ... Additional arguments passed on to FUN.
 #' @param W Vector of weights, or \code{NULL} (the default) if provided by \code{X}.
 #' @param debug Logical, should we return the results of FUN?
-#' @return A vector with the evaluated integrals, with attribute \code{variance} containing the (co)variance (matrix) of the estimate(s).
+#' @return A vector with the evaluated integrals, with attribute \code{variance} containing the (co)variance (matrix) of the estimate(s), or the positive definite matrix closest to the estiamted covariance matrix.
 #' @seealso \code{\link{init.quad}} for creating quadrature points.
 #' @export
+#' @importFrom Matrix nearPD
 #' @examples
 #' ### Basic example; E(X), X ~ N(0,1)
 #' grid <- init.quad(Q = 1, prior = list(mu = 0, Sigma = diag(1)))
@@ -53,7 +54,7 @@
 #' 
 #' # posterior density after 40 items
 #' p <- plot(function(x) exp(dnorm(x, log = TRUE) + 
-#'                       rasch(x, beta = 0, responses = rep(c(0,1), each = 20))),
+#'                             rasch(x, beta = 1, responses = rbinom(100, 1, .5))),
 #'           from = -3, to = 3)
 #' 
 #' # quadrature points used
@@ -67,7 +68,7 @@
 #' 
 #' # but if the posterior is not centered on the prior, this quickly fails:
 #' p <- plot(function(x) exp(dnorm(x, log = TRUE) + 
-#'                       rasch(x, beta = 2, responses = rep(c(0,1), each = 20))),
+#'                             rasch(x, beta = 2, responses = rbinom(100, 1, .5))),
 #'           from = -3, to = 3)
 #' points(grid2$X, exp(grid2$W)*max(p$y), pch = 20, col = "grey")
 #' 
@@ -79,17 +80,19 @@
 #' # or a previous estimate.
 #' # we can then use this to adapt where our quadrature grid should be.
 #' # get an estimate;
-#' est <- eval.quad(rasch, grid, beta = 2, responses = rep(c(0,1), each = 5))
+#' responses <- rbinom(10, 1, .5)
+#' est <- eval.quad(rasch, grid, beta = 2, responses = responses)
+#' print( est )
 #' 
 #' # adapt the grid;
 #' grid3 <- init.quad(Q = 1, adapt = est)
 #' 
 #' # grid is now much closer to posterior 
 #' p <- plot(function(x) exp(dnorm(x, log = TRUE) + 
-#'                       rasch(x, beta = 2, responses = rep(c(0,1), each = 20))),
+#'                             rasch(x, beta = 2, responses = rep(c(0,1), each = 20))),
 #'           from = -3, to = 3)
 #' points(grid3$X, exp(grid3$W)*max(p$y), pch = 20, col = "grey")
-#' est <- eval.quad(rasch, grid3, beta = 2, responses = rep(c(0,1), each = 5))
+#' est <- eval.quad(rasch, grid3, beta = 2, responses = responses)
 #' print(est)
 eval.quad <- function(FUN = function(x) 1, X = NULL, ..., W = NULL, debug = FALSE){
   # allow list input
@@ -133,6 +136,11 @@ eval.quad <- function(FUN = function(x) 1, X = NULL, ..., W = NULL, debug = FALS
     deviation <- X[i,] - estimate
     variance <- variance + ( deviation %*% t(deviation) * f[i] / p1 )
   }
+  
+  # substitute nearest positive definite matrix
+  # thanks Alwin Stegeman
+  variance <- as.matrix(nearPD( variance )$mat)
+  
   
   attr(estimate, "variance") <- variance
   

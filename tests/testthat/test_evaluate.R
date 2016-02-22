@@ -15,7 +15,7 @@ pos.def <- function(n, ev = runif(n, 0, 10))
   return(Z)
 }
 
-for (q in 1:3) for (mu in list(rep(0,q), seq(-3,3,length.out = q))) for (Sigma in list(diag(q), pos.def(q), pos.def(q))) {
+for (q in 1:3) for (mu in list(rep(0,q), seq(-3,3,length.out = q))) for (Sigma in list(diag(q), pos.def(q))) {
   qp <- init.quad(q, prior = list(mu = mu, Sigma = Sigma), ip = 20)
   est <- eval.quad(X = qp)
   var <- attr(est, 'variance')
@@ -28,16 +28,16 @@ for (q in 1:3) for (mu in list(rep(0,q), seq(-3,3,length.out = q))) for (Sigma i
   
   # variance should be prior
   test_that("Variance", {
-    expect_equal(var, Sigma, tolerance = 1E-5)
+    expect_equivalent(var, Sigma)
   })
   
-#   # X^2
-#   est <- eval.quad(dmvnorm, qp, mean = mu, sigma = Sigma, log = TRUE)
-#   var <- attr(est, "variance")
-#   attr(est, "variance") <- NULL
-#   
-#   # should be mean
-#   test_that("Normal expectation", {
-#     expect_equal(est, mu, tolerance = 1E-5)
-#   })
+  # X^2
+  est <- eval.quad(dmvnorm, qp, mean = mu, sigma = Sigma, log = TRUE)
+  var <- attr(est, "variance")
+  attr(est, "variance") <- NULL
+
+  # should be mean
+  test_that("Normal expectation", {
+    expect_equal(est, mu, tolerance = 1E-5)
+  })
 }

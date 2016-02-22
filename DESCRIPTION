@@ -10,9 +10,11 @@ Description: Uses a transformed, rotated and optionally adapted n-dimensional
     normal distributed parameters.
 License: GPL-3
 Depends:
-    R (>= 3.2.0), mvtnorm
+    R (>= 3.2.0),
+    mvtnorm,
+    Matrix
 Imports:
     fastGHQuad (>= 0.2)
 Suggests:
     testthat
-RoxygenNote: 5.0.0
+RoxygenNote: 5.0.1

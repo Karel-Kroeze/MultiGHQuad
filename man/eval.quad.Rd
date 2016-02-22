@@ -19,7 +19,7 @@ Defaults to \code{function(x) 1}, in which case only the prior likelihood is eva
 \item{debug}{Logical, should we return the results of FUN?}
 }
 \value{
-A vector with the evaluated integrals, with attribute \code{variance} containing the (co)variance (matrix) of the estimate(s).
+A vector with the evaluated integrals, with attribute \code{variance} containing the (co)variance (matrix) of the estimate(s), or the positive definite matrix closest to the estiamted covariance matrix.
 }
 \description{
 Evaluates the posterior expectation of a (set of) parameters with a given likelihood function and multivariate normal prior distribution by Gauss-Hermite quadrature.
@@ -67,7 +67,7 @@ evals.values <- attr(evals, "values")
 
 # posterior density after 40 items
 p <- plot(function(x) exp(dnorm(x, log = TRUE) + 
-                      rasch(x, beta = 0, responses = rep(c(0,1), each = 20))),
+                            rasch(x, beta = 1, responses = rbinom(100, 1, .5))),
           from = -3, to = 3)
 
 # quadrature points used
@@ -81,7 +81,7 @@ points(grid2$X, exp(grid2$W)*max(p$y), pch = 20, col = "grey")
 
 # but if the posterior is not centered on the prior, this quickly fails:
 p <- plot(function(x) exp(dnorm(x, log = TRUE) + 
-                      rasch(x, beta = 2, responses = rep(c(0,1), each = 20))),
+                            rasch(x, beta = 2, responses = rbinom(100, 1, .5))),
           from = -3, to = 3)
 points(grid2$X, exp(grid2$W)*max(p$y), pch = 20, col = "grey")
 
@@ -93,17 +93,19 @@ points(grid2$X, exp(grid2$W)*max(p$y), pch = 20, col = "grey")
 # or a previous estimate.
 # we can then use this to adapt where our quadrature grid should be.
 # get an estimate;
-est <- eval.quad(rasch, grid, beta = 2, responses = rep(c(0,1), each = 5))
+responses <- rbinom(10, 1, .5)
+est <- eval.quad(rasch, grid, beta = 2, responses = responses)
+print( est )
 
 # adapt the grid;
 grid3 <- init.quad(Q = 1, adapt = est)
 
 # grid is now much closer to posterior 
 p <- plot(function(x) exp(dnorm(x, log = TRUE) + 
-                      rasch(x, beta = 2, responses = rep(c(0,1), each = 20))),
+                            rasch(x, beta = 2, responses = rep(c(0,1), each = 20))),
           from = -3, to = 3)
 points(grid3$X, exp(grid3$W)*max(p$y), pch = 20, col = "grey")
-est <- eval.quad(rasch, grid3, beta = 2, responses = rep(c(0,1), each = 5))
+est <- eval.quad(rasch, grid3, beta = 2, responses = responses)
 print(est)
 }
 \seealso{

@@ -2,4 +2,5 @@
 
 export(eval.quad)
 export(init.quad)
+importFrom(Matrix,nearPD)
 importFrom(mvtnorm,rmvnorm)

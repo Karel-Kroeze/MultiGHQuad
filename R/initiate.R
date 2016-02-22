@@ -30,19 +30,22 @@
 #' # pruned quad grid
 #' points(grid2$X, cex = exp(grid2$W)/max(exp(grid2$W))*4, col = 'green', pch = 20)
 #' 
+#' 
 #' ### Adaptive quadrature grid
 #' prior <- list(mu = c(0,0), Sigma = matrix(c(1,.5,.5,1),2,2))
-#' dist <- list(mu = c(-2,2), Sigma = prior$Sigma)
+#' adapt <- list(mu = c(-2,2), Sigma = prior$Sigma / 2)
 #' grid <- init.quad(Q = 2, prior, ip = 10, prune = FALSE)
 #' library(mvtnorm)
-#' normal <- rmvnorm(1000, dist$mu, dist$Sigma)
+#' normal <- rmvnorm(1000, adapt$mu, adapt$Sigma)
 #' # noise, centered at (-2, 2)
 #' plot(normal, xlim = c(-6,6), ylim = c(-6,6), pch = 19, col = rgb(0,0,0,.5))
 #' # initial quad grid, centered at (0, 0)
 #' points(grid$X, cex = exp(grid$W)/max(exp(grid$W))*4, col = 'red', pch = 20)
 #' # adapted grid
-#' grid2 <- init.quad(Q =2, prior, adapt = dist, ip = 10, prune = FALSE)
+#' grid2 <- init.quad(Q =2, prior, adapt = adapt, ip = 10, prune = TRUE)
 #' points(grid2$X, cex = exp(grid2$W)/max(exp(grid2$W))*4, col = 'green', pch = 20)
+#' # the grid is adapted to the latest estimate, but weighted towards the prior 
+
 init.quad <- function(Q = 2,
                       prior = list(mu = rep(0, Q), Sigma = diag(Q)),
                       adapt = NULL,
@@ -90,8 +93,8 @@ init.quad <- function(Q = 2,
   # calculate weights
   # same as above, roundabout way to get the combn weights for each combination of quad points
   g <- as.matrix(expand.grid(lapply(apply(replicate(Q,w),2,list),unlist)))
-  # combined weight is the product of the individual weights
-  W <- log(apply(g,1,prod))
+  # combined weight is the product of the individual weights, use sum of logs to reduce inaccuracy
+  W <- apply(g,1,function(x) sum(log(x)))
   
   if (debug){
     points(X, pch = 20, col = 'green', cex = exp(W) / max(exp(W)) * 5)
@@ -116,13 +119,13 @@ init.quad <- function(Q = 2,
     # Ripped from mvtnorm/dmvnorm, note that the -.5 * Q * log(2*pi) term in each ll cancels out, the remainder is aux.
     adapt$chol <- chol(adapt$Sigma)
     adapt$det <- sum(log(diag(adapt$chol)))
-    adapt$aux <- colSums(backsolve(adapt$chol, t(X) - adapt$mu, transpose = TRUE))
+    adapt$aux <- colSums(backsolve(adapt$chol, t(X) - adapt$mu, transpose = TRUE)^2)
     
     prior$chol <- chol(prior$Sigma)
     prior$det <- sum(log(diag(prior$chol)))
-    prior$aux <- colSums(backsolve(prior$chol, t(X) - prior$mu, transpose = TRUE))
+    prior$aux <- colSums(backsolve(prior$chol, t(X) - prior$mu, transpose = TRUE)^2)
     
-    fact <- (adapt$aux - prior$aux) / 2 - adapt$det - prior$det
+    fact <- (adapt$aux - prior$aux) / 2 + adapt$det - prior$det
     
     # incorporate into weights.
     W <- W + fact
@@ -142,7 +145,7 @@ init.quad <- function(Q = 2,
   
   # pruning
   if (prune) {
-    threshold <- log(min(w) * max(w) ^ (Q-1))
+    threshold <- log(min(w) ^ (Q-1) * max(w))
     relevant <- W >= threshold
     
     W <- W[relevant]
