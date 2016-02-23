@@ -17,6 +17,7 @@
 #' @param X Matrix of quadrature points, see \code{\link{init.quad}}. Alternatively, the list of quadrature points and weights produced by \code{\link{init.quad}}.
 #' @param ... Additional arguments passed on to FUN.
 #' @param W Vector of weights, or \code{NULL} (the default) if provided by \code{X}.
+#' @param forcePD Logical, should the returned estimate be forced to the nearest positive definite matrix - if not already PD? If TRUE (Default: TRUE), \code{\link[Matrix]{nearPD}} is used to arrive at the closest PD matrix.
 #' @param debug Logical, should we return the results of FUN?
 #' @return A vector with the evaluated integrals, with attribute \code{variance} containing the (co)variance (matrix) of the estimate(s), or the positive definite matrix closest to the estiamted covariance matrix.
 #' @seealso \code{\link{init.quad}} for creating quadrature points.
@@ -94,7 +95,12 @@
 #' points(grid3$X, exp(grid3$W)*max(p$y), pch = 20, col = "grey")
 #' est <- eval.quad(rasch, grid3, beta = 2, responses = responses)
 #' print(est)
-eval.quad <- function(FUN = function(x) 1, X = NULL, ..., W = NULL, debug = FALSE){
+eval.quad <- function(FUN = function(x) 1,
+                      X = NULL,
+                      ...,
+                      W = NULL,
+                      forcePD = TRUE,
+                      debug = FALSE){
   # allow list input
   if (is.list(X)){
   W <- X$W
@@ -141,8 +147,7 @@ eval.quad <- function(FUN = function(x) 1, X = NULL, ..., W = NULL, debug = FALS
   # thanks Alwin Stegeman
   variance <- as.matrix(nearPD( variance )$mat)
   
-  
-  attr(estimate, "variance") <- variance
+    attr(estimate, "variance") <- variance
   
   # debug stuff
   if (debug) {

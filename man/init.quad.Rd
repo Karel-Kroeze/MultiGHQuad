@@ -5,7 +5,7 @@
 \title{Q-dimensional grid of quadrature points.}
 \usage{
 init.quad(Q = 2, prior = list(mu = rep(0, Q), Sigma = diag(Q)),
-  adapt = NULL, ip = 6, prune = FALSE, debug = FALSE)
+  adapt = NULL, ip = 6, prune = FALSE, forcePD = FALSE, debug = FALSE)
 }
 \arguments{
 \item{Q}{Number of dimensions. Defaults to 2. Only required when \code{mu} and \code{Sigma} are not provided.}
@@ -17,6 +17,8 @@ init.quad(Q = 2, prior = list(mu = rep(0, Q), Sigma = diag(Q)),
 \item{ip}{Number of quadrature points \emph{per dimension}. Defaults to 6. Note that the total number of quadrature points is \code{ip^Q}.}
 
 \item{prune}{Logical, should quadrature points with a very low weight be removed? Defaults to false. See details.}
+
+\item{forcePD}{Logical, should \code{adapt} and \code{prior} arguments be forced to the neares positive definite matrix - if not already PD? If TRUE (Default: FALSE), \code{\link[Matrix]{nearPD}} is used to arrive at the closest PD matrix.}
 
 \item{debug}{Logical, draws debugging plots when true.}
 }

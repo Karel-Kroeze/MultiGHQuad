@@ -4,7 +4,8 @@
 \alias{eval.quad}
 \title{Evaluation of multivariate normal distributed expectations}
 \usage{
-eval.quad(FUN = function(x) 1, X = NULL, ..., W = NULL, debug = FALSE)
+eval.quad(FUN = function(x) 1, X = NULL, ..., W = NULL, forcePD = TRUE,
+  debug = FALSE)
 }
 \arguments{
 \item{FUN}{log likelihood function of the parameters to be estimated. 
@@ -15,6 +16,8 @@ Defaults to \code{function(x) 1}, in which case only the prior likelihood is eva
 \item{...}{Additional arguments passed on to FUN.}
 
 \item{W}{Vector of weights, or \code{NULL} (the default) if provided by \code{X}.}
+
+\item{forcePD}{Logical, should the returned estimate be forced to the nearest positive definite matrix - if not already PD? If TRUE (Default: TRUE), \code{\link[Matrix]{nearPD}} is used to arrive at the closest PD matrix.}
 
 \item{debug}{Logical, should we return the results of FUN?}
 }

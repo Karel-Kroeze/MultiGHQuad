@@ -10,11 +10,13 @@
 #' @param adapt List of adaptive mean \code{mu}, = \code{vector}, and covariance matrix \code{Sigma} = \code{matrix}, if \code{NULL} no adaptation is used. Defaults to NULL.
 #' @param ip Number of quadrature points \emph{per dimension}. Defaults to 6. Note that the total number of quadrature points is \code{ip^Q}.
 #' @param prune Logical, should quadrature points with a very low weight be removed? Defaults to false. See details.
+#' @param forcePD Logical, should \code{adapt} and \code{prior} arguments be forced to the neares positive definite matrix - if not already PD? If TRUE (Default: FALSE), \code{\link[Matrix]{nearPD}} is used to arrive at the closest PD matrix. 
 #' @param debug Logical, draws debugging plots when true.
 #' @return A list with a matrix \code{X} of \code{ip^Q} by \code{Q} quadrature points and a vector \code{W} of length \code{ip^Q} associated weights.
 #' @seealso \code{\link[fastGHQuad]{gaussHermiteData}}, used to create unidimensional quadrature points, and \code{\link{eval.quad}} for evaluating the integral.
 #' @export
 #' @importFrom mvtnorm rmvnorm
+#' @importFrom Matrix nearPD
 #' @examples 
 #' ### basic quadrature grid /w pruning.
 #' mu <- c(0,0)
@@ -51,6 +53,7 @@ init.quad <- function(Q = 2,
                       adapt = NULL,
                       ip = 6,
                       prune = FALSE,
+                      forcePD = FALSE,
                       debug = FALSE){
   
   # allow previous estimate input for adapt
@@ -71,10 +74,15 @@ init.quad <- function(Q = 2,
   
   # compute lambda (eigen decomposition covar matrix)
   trans <- function(X, Sigma) {
+    if(forcePD)
+      Sigma <- nearPD(Sigma)
     lambda <- with(eigen(Sigma), {
-      if (any(values < 0)) warning("Matrix is not positive definite.")
-      if(length(values) > 1) vectors %*% diag(sqrt(values))
-      else vectors * sqrt(values)
+      if (any(values < 0)) 
+        warning("Matrix is not positive definite.")
+      if(length(values) > 1) 
+        vectors %*% diag(sqrt(values))
+      else 
+        vectors * sqrt(values)
     })
     t(lambda %*% t(X))
   }
@@ -104,11 +112,13 @@ init.quad <- function(Q = 2,
   # apply mv normal pdf error function if no earlier estimate is available
   if (is.null(adapt)){
     X <- trans(X, prior$Sigma)
+    X <- t(t(X) + prior$mu)
   }
   # adapt to best estimate if there is
   else {
     # Adapt quadrature grid
     X <- trans(X, adapt$Sigma)
+    X <- t(t(X) + adapt$mu)
     
     if (debug){
       points(X, pch = 20, col = 'blue', cex = exp(W) / max(exp(W)) * 5)
@@ -129,13 +139,6 @@ init.quad <- function(Q = 2,
     
     # incorporate into weights.
     W <- W + fact
-  }
-  
-  # plug in prior / adaptive mean
-  if (is.null(adapt)){
-    X <- t(t(X) + prior$mu)
-  } else {
-    X <- t(t(X) + adapt$mu)
   }
   
   if(debug){
