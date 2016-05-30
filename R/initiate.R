@@ -75,7 +75,7 @@ init.quad <- function(Q = 2,
   # compute lambda (eigen decomposition covar matrix)
   trans <- function(X, Sigma) {
     if(forcePD)
-      Sigma <- nearPD(Sigma)
+      Sigma <- nearPD(Sigma)$mat
     lambda <- with(eigen(Sigma), {
       if (any(values < 0)) 
         warning("Matrix is not positive definite.")
