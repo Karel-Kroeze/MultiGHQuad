@@ -52,9 +52,9 @@ test_that("Sum of weights is 1, pruning does not take too much", {
       pruned <- exp(init.quad(q, ip = ip)$W)
       not.pruned <- exp(init.quad(q, ip = ip, prune = FALSE)$W)
       
-      expect_equal(sum(not.pruned), 1, info = paste("q", q, "ip", ip))
+      expect_equal(sum(not.pruned), 1, label = paste("q", q, "ip", ip))
       # loose no more than 2% of weights.
-      expect_less_than(1 - sum(not.pruned), .01, info = paste("q", q, "ip", ip))  
+      expect_lt(1 - sum(not.pruned), .01, label = paste("q", q, "ip", ip))  
     }
   }
 })
@@ -80,7 +80,7 @@ pos.def <- function(n, ev = runif(n, 0, 10))
 con <- c(1/10, 1/9.523810, 1/9.501188, 1/9.500059) # I'm having a brainfart. What is this?
 for (q in 2:4){
   x <- pos.def(q)
-  tol <- 1e-3     # this is numerical estimation, not rocket science. hehehehe, I made a funny.
+  tol <- 1e-3     # this is numerical estimation, not rocket science
   
   test_that("X transformed correctly", {
     expect_equal(cov(init.quad(q, prior = list(mu = rep(0,q), Sigma = diag(q)), ip = 20, prune = FALSE)$X / sqrt(2))*con[q], diag(q), tolerance = tol)
