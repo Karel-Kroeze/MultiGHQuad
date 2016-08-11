@@ -3,5 +3,6 @@
 export(eval.quad)
 export(init.quad)
 importFrom(Matrix,nearPD)
+importFrom(graphics,plot)
+importFrom(graphics,points)
 importFrom(mvtnorm,rmvnorm)
-importFrom("graphics", "plot", "points")

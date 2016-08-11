@@ -17,6 +17,7 @@
 #' @export
 #' @importFrom mvtnorm rmvnorm
 #' @importFrom Matrix nearPD
+#' @importFrom graphics plot points
 #' @examples 
 #' ### basic quadrature grid /w pruning.
 #' mu <- c(0,0)
